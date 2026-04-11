@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,11 +10,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { formatScore, formatTechPay } from "@/lib/formatters";
 import type { MarketDetailResponse } from "@/lib/schemas/market";
 import type { ExplainMarketResponse } from "@/lib/schemas/ai-insight";
-import { ExternalLink } from "lucide-react";
 import { ConfidenceBadge } from "./ConfidenceBadge";
 import { MarketExplanationCard } from "./MarketExplanationCard";
 
@@ -38,7 +37,7 @@ async function postFeedback(body: {
 }
 
 /**
- * Selected zone metrics, sample jobs, compare/save actions, and async AI explanation.
+ * Selected region: metrics, actions, AI narrative, and sample job rows.
  */
 export function MarketDetailPanel({
   regionId,
@@ -79,12 +78,12 @@ export function MarketDetailPanel({
 
   if (!regionId) {
     return (
-      <Card className="border-dashed">
-        <CardHeader>
-          <CardTitle className="text-base">Zone details</CardTitle>
-          <CardDescription>
-            Select a market from the map or list to inspect pay, volume, samples, and
-            grounded AI commentary.
+      <Card className="rounded-2xl border-dashed border-primary/20 bg-card/50 shadow-sm backdrop-blur-sm">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-semibold tracking-tight">Selection</CardTitle>
+          <CardDescription className="text-xs leading-relaxed">
+            Choose a market from the map or the ranked list to see pay breakdowns, sample
+            roles, and an AI summary grounded in these metrics.
           </CardDescription>
         </CardHeader>
       </Card>
@@ -93,9 +92,10 @@ export function MarketDetailPanel({
 
   if (detailQuery.isLoading) {
     return (
-      <Card>
+      <Card className="rounded-2xl shadow-premium">
         <CardHeader>
-          <CardTitle className="text-base">Loading market…</CardTitle>
+          <CardTitle className="text-sm font-semibold">Loading…</CardTitle>
+          <CardDescription className="text-xs">Fetching market detail</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -103,9 +103,12 @@ export function MarketDetailPanel({
 
   if (detailQuery.isError || !detailQuery.data) {
     return (
-      <Card>
+      <Card className="rounded-2xl border-destructive/35 shadow-premium">
         <CardHeader>
-          <CardTitle className="text-base text-destructive">Could not load market</CardTitle>
+          <CardTitle className="text-sm font-semibold text-destructive">
+            Could not load market
+          </CardTitle>
+          <CardDescription className="text-xs">Try selecting the region again.</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -118,50 +121,61 @@ export function MarketDetailPanel({
   );
 
   return (
-    <div className="flex flex-col gap-4">
-      <Card>
-        <CardHeader className="space-y-2">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <CardTitle className="text-lg">{d.regionName}</CardTitle>
+    <div className="flex flex-col gap-3 lg:gap-4">
+      <Card className="rounded-2xl shadow-premium">
+        <CardHeader className="space-y-2 border-b border-border/50 bg-muted/10 pb-3.5 dark:bg-muted/5">
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <div>
+              <CardTitle className="text-base font-semibold leading-tight">
+                {d.regionName}
+              </CardTitle>
+              <CardDescription className="mt-1 text-xs">
+                {d.specialty} · Opportunity score {formatScore(d.metrics.opportunityScore)}
+              </CardDescription>
+            </div>
             <ConfidenceBadge score={d.metrics.confidenceScore} />
           </div>
-          <CardDescription>
-            {d.specialty} · Opportunity {formatScore(d.metrics.opportunityScore)}
-            {lowConfidence && (
-              <span className="mt-2 block rounded-md bg-amber-500/10 px-2 py-1 text-xs text-amber-950 dark:text-amber-100">
-                Limited data: interpret metrics cautiously; sample size or pay reporting
-                may be thin.
-              </span>
-            )}
-          </CardDescription>
+          {lowConfidence ? (
+            <p className="rounded-md bg-amber-500/10 px-2.5 py-2 text-xs text-amber-950 dark:text-amber-100">
+              Limited data for this bucket—use metrics as directional only.
+            </p>
+          ) : null}
         </CardHeader>
-        <CardContent className="space-y-4 text-sm">
+        <CardContent className="space-y-4 pt-4 text-sm">
           <p className="text-xs text-muted-foreground">
-            Compensation shown as weekly equivalent (FTE annual ÷ 52) when sourced from
-            salary fields.
+            Compensation is weekly equivalent (FTE annual ÷ 52) when salary text was
+            available on listings.
           </p>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3 rounded-xl border border-border/50 bg-gradient-to-br from-muted/50 to-muted/25 p-3.5 sm:grid-cols-3 dark:from-muted/30 dark:to-muted/10">
             <div>
-              <p className="text-muted-foreground">Median comp</p>
-              <p className="font-medium">{formatTechPay(d.metrics.medianPay)}</p>
-            </div>
-            <div>
-              <p className="text-muted-foreground">Avg comp</p>
-              <p className="font-medium">{formatTechPay(d.metrics.avgPay)}</p>
-            </div>
-            <div>
-              <p className="text-muted-foreground">P90 comp</p>
-              <p className="font-medium">{formatTechPay(d.metrics.payP90)}</p>
-            </div>
-            <div>
-              <p className="text-muted-foreground">Active / fresh (7d)</p>
-              <p className="font-medium">
-                {d.metrics.activeJobs} / {d.metrics.freshJobs7d}
+              <p className="text-xs text-muted-foreground">Median</p>
+              <p className="mt-0.5 font-semibold tabular-nums">
+                {formatTechPay(d.metrics.medianPay)}
               </p>
             </div>
             <div>
-              <p className="text-muted-foreground">Saturation proxy</p>
-              <p className="font-medium">
+              <p className="text-xs text-muted-foreground">Average</p>
+              <p className="mt-0.5 font-semibold tabular-nums">
+                {formatTechPay(d.metrics.avgPay)}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">P90</p>
+              <p className="mt-0.5 font-semibold tabular-nums">
+                {formatTechPay(d.metrics.payP90)}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Active roles</p>
+              <p className="mt-0.5 font-semibold tabular-nums">{d.metrics.activeJobs}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Fresh (7d)</p>
+              <p className="mt-0.5 font-semibold tabular-nums">{d.metrics.freshJobs7d}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Saturation proxy</p>
+              <p className="mt-0.5 font-semibold tabular-nums">
                 {d.metrics.competitionScore != null
                   ? formatScore(d.metrics.competitionScore)
                   : "—"}
@@ -169,12 +183,20 @@ export function MarketDetailPanel({
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button type="button" variant="secondary" onClick={onCompare}>
-              Compare markets
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              className="rounded-xl"
+              onClick={onCompare}
+            >
+              Compare with another market
             </Button>
             <Button
               type="button"
+              size="sm"
               variant="outline"
+              className="rounded-xl"
               onClick={() => {
                 onSave();
                 if (queryId) {
@@ -186,7 +208,7 @@ export function MarketDetailPanel({
                 }
               }}
             >
-              Save market
+              Save for later
             </Button>
           </div>
         </CardContent>
@@ -209,41 +231,43 @@ export function MarketDetailPanel({
         }
       />
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Recent roles (sample)</CardTitle>
-          <CardDescription>Open listings in this zone for the selected track</CardDescription>
+      <Card className="rounded-2xl shadow-premium">
+        <CardHeader className="border-b border-border/50 bg-muted/10 py-3.5 dark:bg-muted/5">
+          <CardTitle className="text-sm font-semibold tracking-tight">Sample listings</CardTitle>
+          <CardDescription className="text-xs">
+            Recent roles in this region for {d.specialty}
+          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-3 text-sm">
+        <CardContent className="pt-3 text-sm">
           {d.sampleJobs.length === 0 ? (
-            <p className="text-muted-foreground">No sample rows returned.</p>
+            <p className="text-xs text-muted-foreground">No sample rows for this slice.</p>
           ) : (
-            d.sampleJobs.map((j) => (
-              <div key={j.id}>
-                <p className="font-medium">{j.title}</p>
-                <p className="text-muted-foreground">
-                  {[j.facilityName, j.city, j.state].filter(Boolean).join(" · ") ||
-                    "—"}{" "}
-                  · {formatTechPay(j.grossWeeklyPay)}
-                </p>
-                {j.listingUrl ? (
-                  <a
-                    href={j.listingUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-primary underline-offset-4 hover:underline"
-                  >
-                    View listing
-                    <ExternalLink className="size-3 shrink-0" aria-hidden />
-                  </a>
-                ) : null}
-                <Separator className="mt-2" />
-              </div>
-            ))
+            <ul className="divide-y divide-border/60">
+              {d.sampleJobs.map((j) => (
+                <li key={j.id} className="py-3 first:pt-0">
+                  <p className="font-medium leading-snug">{j.title}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {[j.facilityName, j.city, j.state].filter(Boolean).join(" · ") || "—"} ·{" "}
+                    {formatTechPay(j.grossWeeklyPay)}
+                  </p>
+                  {j.listingUrl ? (
+                    <a
+                      href={j.listingUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary underline-offset-4 hover:underline"
+                    >
+                      View listing
+                      <ExternalLink className="size-3 shrink-0" aria-hidden />
+                    </a>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
           )}
           {hasRemotiveSamples ? (
-            <p className="text-xs text-muted-foreground">
-              Sample roles include listings from{" "}
+            <p className="mt-3 border-t border-border/60 pt-3 text-xs text-muted-foreground">
+              Some links via{" "}
               <a
                 href="https://remotive.com"
                 target="_blank"
@@ -252,7 +276,7 @@ export function MarketDetailPanel({
               >
                 Remotive
               </a>
-              ; apply on their site.
+              — apply on their site.
             </p>
           ) : null}
         </CardContent>

@@ -2,21 +2,31 @@
 
 import { useQuery } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
+import { Sparkles } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { SearchMarketsResponse } from "@/lib/schemas/market";
 import type { FilterValues } from "./MarketSearchFilters";
 import { MarketSearchFilters } from "./MarketSearchFilters";
 import { MarketDetailPanel } from "./MarketDetailPanel";
 import { MarketCompareDrawer } from "./MarketCompareDrawer";
 import { RankedMarketsPanel } from "./RankedMarketsPanel";
-import { Skeleton } from "@/components/ui/skeleton";
 
 const OpportunityMap = dynamic(
   () =>
     import("./OpportunityMap").then((m) => ({ default: m.OpportunityMap })),
   {
     ssr: false,
-    loading: () => <Skeleton className="h-full min-h-[320px] w-full rounded-lg" />,
+    loading: () => (
+      <Skeleton className="h-full min-h-[280px] w-full rounded-xl bg-muted/50" />
+    ),
   }
 );
 
@@ -44,7 +54,7 @@ function buildSearchParams(f: FilterValues): URLSearchParams {
 }
 
 /**
- * Filters, Mapbox map, ranked panel, detail, compare, and async AI explanations.
+ * Full-page explorer: premium chrome, map workspace, ranked list, and detail stack.
  */
 export function MarketExplorer() {
   const [filters, setFilters] = useState<FilterValues>(defaultFilters);
@@ -93,62 +103,101 @@ export function MarketExplorer() {
   );
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <div className="border-b border-border bg-background px-4 py-3">
-        <h1 className="text-xl font-semibold tracking-tight">MarketLens AI</h1>
-        <p className="text-sm text-muted-foreground">
-          Tech job market intelligence by metro — deterministic ranking, AI explains the
-          tradeoffs.
-        </p>
-      </div>
-      <MarketSearchFilters
-        values={filters}
-        onChange={setFilters}
-        onSubmit={runSearch}
-        onReset={() => {
-          setFilters(defaultFilters);
-          setSearchKey(buildSearchParams(defaultFilters).toString());
-        }}
-        isSearching={searchQuery.isFetching}
-      />
-      <div className="grid flex-1 gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(320px,400px)]">
-        <div className="flex min-h-[420px] flex-col gap-4">
-          <div className="min-h-[320px] flex-1">
-            {searchQuery.isError && (
-              <p className="mb-2 text-sm text-destructive">
-                {(searchQuery.error as Error).message}. Is{" "}
-                <code className="rounded bg-muted px-1">DATABASE_URL</code> set and the
-                DB seeded?
+    <div className="mesh-page flex min-h-dvh flex-col">
+      <div className="chrome-glass sticky top-0 z-40">
+        <div className="accent-line w-full" aria-hidden />
+        <div className="mx-auto flex max-w-[1600px] flex-col gap-2 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+          <div className="flex items-start gap-3">
+            <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-inner ring-1 ring-primary/15 dark:bg-primary/15 dark:ring-primary/25">
+              <Sparkles className="size-5" strokeWidth={1.75} aria-hidden />
+            </div>
+            <div>
+              <h1 className="font-heading text-xl font-semibold tracking-tight sm:text-2xl">
+                <span className="text-gradient-brand">MarketLens</span>{" "}
+                <span className="text-foreground">AI</span>
+              </h1>
+              <p className="mt-0.5 max-w-xl text-sm leading-relaxed text-muted-foreground">
+                Rank labor markets for your role, compare pay and demand signals, and read
+                AI commentary grounded in the same data—not a black box.
               </p>
-            )}
-            <OpportunityMap
-              markets={mapMarkets}
-              selectedId={selectedId}
-              onSelect={setSelectedId}
-            />
+            </div>
           </div>
         </div>
-        <div className="flex flex-col gap-4">
-          <RankedMarketsPanel
-            isLoading={!data && searchQuery.isFetching}
-            markets={markets}
-            hiddenOpportunities={hidden}
-            selectedId={selectedId}
-            onSelect={(m) => setSelectedId(m.regionId)}
-            queryId={queryId}
-            specialty={filters.specialty}
-          />
-          <MarketDetailPanel
-            regionId={selectedId}
-            specialty={filters.specialty}
-            queryId={queryId}
-            onCompare={() => setCompareOpen(true)}
-            onSave={() => {
-              /* feedback handled inside panel */
-            }}
-          />
-        </div>
+        <MarketSearchFilters
+          values={filters}
+          onChange={setFilters}
+          onSubmit={runSearch}
+          onReset={() => {
+            setFilters(defaultFilters);
+            setSearchKey(buildSearchParams(defaultFilters).toString());
+          }}
+          isSearching={searchQuery.isFetching}
+        />
       </div>
+
+      <main className="mx-auto flex w-full max-w-[1600px] min-h-0 flex-1 flex-col gap-4 px-4 py-5 lg:gap-6 lg:py-6">
+        {searchQuery.isError ? (
+          <div
+            role="alert"
+            className="rounded-2xl border border-destructive/30 bg-destructive/5 px-4 py-4 text-sm shadow-sm backdrop-blur-sm"
+          >
+            <p className="font-heading font-semibold text-destructive">Search failed</p>
+            <p className="mt-2 leading-relaxed text-destructive/90">
+              {(searchQuery.error as Error).message}. Check that{" "}
+              <code className="rounded-md bg-muted px-1.5 py-0.5 font-mono text-xs text-foreground">
+                DATABASE_URL
+              </code>{" "}
+              is set and the database is migrated and seeded.
+            </p>
+          </div>
+        ) : null}
+
+        <div className="grid min-h-0 flex-1 grid-cols-1 gap-5 lg:min-h-[calc(100dvh-12rem)] lg:grid-cols-[minmax(0,1fr)_minmax(300px,400px)] lg:grid-rows-1 lg:items-stretch lg:gap-6">
+          <Card className="flex min-h-[320px] flex-col overflow-hidden rounded-2xl shadow-premium lg:min-h-0 lg:h-full">
+            <CardHeader className="shrink-0 space-y-1 border-b border-border/50 bg-muted/20 py-3.5 dark:bg-muted/10">
+              <CardTitle className="text-sm font-semibold tracking-tight">
+                Market map
+              </CardTitle>
+              <CardDescription className="text-xs leading-relaxed">
+                Centroids sized by region; marker color encodes opportunity score for your
+                current search. Click to sync the detail panel.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="relative min-h-[280px] flex-1 bg-muted/10 p-0 lg:min-h-0">
+              <OpportunityMap
+                markets={mapMarkets}
+                selectedId={selectedId}
+                onSelect={setSelectedId}
+              />
+            </CardContent>
+          </Card>
+
+          <div className="flex min-h-0 flex-col gap-5 lg:h-full lg:min-h-0">
+            <RankedMarketsPanel
+              isLoading={!data && searchQuery.isFetching}
+              markets={markets}
+              hiddenOpportunities={hidden}
+              selectedId={selectedId}
+              onSelect={(m) => setSelectedId(m.regionId)}
+              queryId={queryId}
+              specialty={filters.specialty}
+              className="lg:min-h-0 lg:flex-[3]"
+            />
+            <div className="min-h-0 lg:flex-[2] lg:overflow-y-auto lg:pt-0.5">
+              <MarketDetailPanel
+                regionId={selectedId}
+                specialty={filters.specialty}
+                queryId={queryId}
+                onCompare={() => setCompareOpen(true)}
+                onSave={() => {
+                  /* feedback handled inside panel */
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      </main>
+
       <MarketCompareDrawer
         open={compareOpen}
         onOpenChange={setCompareOpen}

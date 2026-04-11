@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -18,7 +19,7 @@ type Props = {
 };
 
 /**
- * Grounded AI explanation panel with optional helpful / not helpful actions.
+ * AI narrative grounded in on-page metrics; ranking stays deterministic.
  */
 export function MarketExplanationCard({
   explanation,
@@ -28,13 +29,15 @@ export function MarketExplanationCard({
 }: Props) {
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">AI insight</CardTitle>
-          <CardDescription>Generating explanation…</CardDescription>
+      <Card className="rounded-2xl shadow-premium">
+        <CardHeader className="border-b border-border/50 bg-muted/10 py-3.5 dark:bg-muted/5">
+          <CardTitle className="text-sm font-semibold">AI insight</CardTitle>
+          <CardDescription className="text-xs">
+            Generating a short narrative from the metrics above…
+          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-2 text-sm text-muted-foreground">
-          <p>Structured rankings are already shown; narrative loads separately.</p>
+        <CardContent className="pt-3 text-xs text-muted-foreground">
+          Rankings are already final; this layer only explains tradeoffs in prose.
         </CardContent>
       </Card>
     );
@@ -45,34 +48,37 @@ export function MarketExplanationCard({
   }
 
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between gap-2">
-          <CardTitle className="text-base">AI insight</CardTitle>
-          {cached != null && (
-            <span className="text-xs text-muted-foreground">
+    <Card className="rounded-2xl shadow-premium">
+      <CardHeader className="space-y-1 border-b border-border/50 bg-muted/10 pb-3.5 dark:bg-muted/5">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <CardTitle className="text-sm font-semibold">AI insight</CardTitle>
+          {cached != null ? (
+            <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
               {cached ? "Cached" : "Fresh"}
             </span>
-          )}
+          ) : null}
         </div>
-        <CardDescription>
-          Grounded in the metrics on this page—ranking stays deterministic; the model
-          only narrates.
+        <CardDescription className="text-xs leading-relaxed">
+          Based on the numbers in this panel—not a second ranking pass.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4 text-sm">
-        <p className="leading-relaxed">{explanation.summary}</p>
+      <CardContent className="space-y-4 pt-4 text-sm">
+        <p className="leading-relaxed text-foreground">{explanation.summary}</p>
         <div>
-          <h4 className="mb-1 font-medium">Strengths</h4>
-          <ul className="list-inside list-disc text-muted-foreground">
+          <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Strengths
+          </h4>
+          <ul className="list-inside list-disc space-y-0.5 text-xs text-muted-foreground">
             {explanation.strengths.map((s) => (
               <li key={s}>{s}</li>
             ))}
           </ul>
         </div>
         <div>
-          <h4 className="mb-1 font-medium">Tradeoffs</h4>
-          <ul className="list-inside list-disc text-muted-foreground">
+          <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Tradeoffs
+          </h4>
+          <ul className="list-inside list-disc space-y-0.5 text-xs text-muted-foreground">
             {explanation.tradeoffs.map((s) => (
               <li key={s}>{s}</li>
             ))}
@@ -80,40 +86,48 @@ export function MarketExplanationCard({
         </div>
         <Separator />
         <div>
-          <h4 className="mb-1 font-medium">Best for</h4>
-          <ul className="list-inside list-disc text-muted-foreground">
+          <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Best for
+          </h4>
+          <ul className="list-inside list-disc space-y-0.5 text-xs text-muted-foreground">
             {explanation.bestFor.map((s) => (
               <li key={s}>{s}</li>
             ))}
           </ul>
         </div>
         <div>
-          <h4 className="mb-1 font-medium">Watchouts</h4>
-          <ul className="list-inside list-disc text-muted-foreground">
+          <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Watchouts
+          </h4>
+          <ul className="list-inside list-disc space-y-0.5 text-xs text-muted-foreground">
             {explanation.watchouts.map((s) => (
               <li key={s}>{s}</li>
             ))}
           </ul>
         </div>
         <p className="text-xs text-muted-foreground">{explanation.confidenceNote}</p>
-        {onFeedback && (
-          <div className="flex gap-2 pt-2">
-            <button
+        {onFeedback ? (
+          <div className="flex flex-wrap gap-2 border-t border-border/60 pt-3">
+            <Button
               type="button"
-              className="rounded-md border border-border px-3 py-1 text-xs hover:bg-muted"
+              size="sm"
+              variant="secondary"
+              className="rounded-xl"
               onClick={() => onFeedback(true)}
             >
               Helpful
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
-              className="rounded-md border border-border px-3 py-1 text-xs hover:bg-muted"
+              size="sm"
+              variant="outline"
+              className="rounded-xl"
               onClick={() => onFeedback(false)}
             >
               Not helpful
-            </button>
+            </Button>
           </div>
-        )}
+        ) : null}
       </CardContent>
     </Card>
   );

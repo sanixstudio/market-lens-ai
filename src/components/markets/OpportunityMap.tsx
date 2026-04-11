@@ -164,8 +164,8 @@ export function OpportunityMap({ markets, selectedId, onSelect }: Props) {
 
   if (!mapboxAccessToken) {
     return (
-      <div className="flex h-full min-h-[320px] flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-muted/30 p-6 text-center text-sm text-muted-foreground">
-        <p className="font-medium text-foreground">Mapbox token missing</p>
+      <div className="flex h-full min-h-[280px] flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-primary/25 bg-gradient-to-b from-muted/40 to-muted/20 p-8 text-center text-sm text-muted-foreground">
+        <p className="font-heading font-semibold text-foreground">Mapbox token missing</p>
         <p>
           Set <code className="rounded bg-muted px-1">NEXT_PUBLIC_MAPBOX_TOKEN</code> in{" "}
           <code className="rounded bg-muted px-1">.env.local</code> and restart the dev server.
@@ -185,7 +185,7 @@ export function OpportunityMap({ markets, selectedId, onSelect }: Props) {
   }
 
   return (
-    <div className="relative h-full min-h-[320px] w-full overflow-hidden rounded-lg border border-border bg-muted/30">
+    <div className="relative h-full min-h-[280px] w-full overflow-hidden rounded-b-xl bg-gradient-to-br from-muted/30 via-muted/15 to-transparent">
       <Map
         ref={mapRef}
         mapboxAccessToken={mapboxAccessToken}
@@ -226,6 +226,28 @@ export function OpportunityMap({ markets, selectedId, onSelect }: Props) {
           );
         })}
       </Map>
+      <div
+        className="pointer-events-none absolute bottom-3 left-3 z-10 max-w-[10rem] rounded-xl border border-border/60 bg-card/90 px-3 py-2.5 text-[10px] leading-tight shadow-lg shadow-black/5 backdrop-blur-md dark:shadow-black/30"
+        aria-hidden
+      >
+        <p className="mb-2 font-heading text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+          Opportunity
+        </p>
+        <ul className="space-y-1 text-muted-foreground">
+          <li className="flex items-center gap-1.5">
+            <span className="size-2.5 shrink-0 rounded-full bg-emerald-600 ring-1 ring-black/10" />
+            Strong
+          </li>
+          <li className="flex items-center gap-1.5">
+            <span className="size-2.5 shrink-0 rounded-full bg-amber-500 ring-1 ring-black/10" />
+            Medium
+          </li>
+          <li className="flex items-center gap-1.5">
+            <span className="size-2.5 shrink-0 rounded-full bg-slate-400 ring-1 ring-black/10" />
+            Lower
+          </li>
+        </ul>
+      </div>
     </div>
   );
 }
