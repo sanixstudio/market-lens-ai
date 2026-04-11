@@ -3,13 +3,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -98,9 +92,8 @@ export function MarketCompareDrawer({
             <SheetTitle className="font-heading text-lg font-semibold tracking-tight">
               Compare markets
             </SheetTitle>
-            <SheetDescription className="text-xs leading-relaxed">
-              Same role track ({specialty}). Choose another region from your current search
-              results.
+            <SheetDescription className="text-xs text-muted-foreground">
+              {specialty} · pick another region from this search.
             </SheetDescription>
           </SheetHeader>
         </div>
@@ -110,7 +103,7 @@ export function MarketCompareDrawer({
             <Label className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
               Baseline
             </Label>
-            <p className="rounded-xl border border-border/60 bg-gradient-to-br from-muted/60 to-muted/25 px-3.5 py-2.5 text-sm font-medium shadow-sm dark:from-muted/40 dark:to-muted/15">
+            <p className="rounded-xl border border-border/60 bg-linear-to-br from-muted/60 to-muted/25 px-3.5 py-2.5 text-sm font-medium shadow-sm dark:from-muted/40 dark:to-muted/15">
               {primaryName ?? "Select a market in the list first"}
             </p>
           </div>
@@ -169,7 +162,6 @@ export function MarketCompareDrawer({
                   <Card key={c.regionId} className="rounded-xl shadow-md">
                     <CardHeader className="border-b border-border/50 bg-muted/10 py-2.5 dark:bg-muted/5">
                       <CardTitle className="text-sm font-semibold">{c.regionName}</CardTitle>
-                      <CardDescription className="text-xs">Snapshot</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-1.5 pt-3 text-xs">
                       <p>

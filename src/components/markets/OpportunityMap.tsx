@@ -164,28 +164,26 @@ export function OpportunityMap({ markets, selectedId, onSelect }: Props) {
 
   if (!mapboxAccessToken) {
     return (
-      <div className="flex h-full min-h-[280px] flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-primary/25 bg-gradient-to-b from-muted/40 to-muted/20 p-8 text-center text-sm text-muted-foreground">
-        <p className="font-heading font-semibold text-foreground">Mapbox token missing</p>
+      <div className="flex h-full min-h-0 flex-col items-center justify-center gap-2 p-4 text-center text-xs text-muted-foreground">
+        <p className="font-heading text-sm font-semibold text-foreground">Mapbox token missing</p>
         <p>
-          Set <code className="rounded bg-muted px-1">NEXT_PUBLIC_MAPBOX_TOKEN</code> in{" "}
-          <code className="rounded bg-muted px-1">.env.local</code> and restart the dev server.
+          Add <code className="rounded bg-muted px-1">NEXT_PUBLIC_MAPBOX_TOKEN</code> to{" "}
+          <code className="rounded bg-muted px-1">.env.local</code>, then restart.
         </p>
-        <p className="text-xs">
-          <a
-            className="text-primary underline"
-            href="https://visgl.github.io/react-map-gl/docs/get-started/mapbox-tokens"
-            target="_blank"
-            rel="noreferrer"
-          >
-            About Mapbox tokens
-          </a>
-        </p>
+        <a
+          className="text-primary underline"
+          href="https://visgl.github.io/react-map-gl/docs/get-started/mapbox-tokens"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Token docs
+        </a>
       </div>
     );
   }
 
   return (
-    <div className="relative h-full min-h-[280px] w-full overflow-hidden rounded-b-xl bg-gradient-to-br from-muted/30 via-muted/15 to-transparent">
+    <div className="relative h-full min-h-0 w-full overflow-hidden rounded-b-xl bg-linear-to-br from-muted/30 via-muted/15 to-transparent">
       <Map
         ref={mapRef}
         mapboxAccessToken={mapboxAccessToken}
@@ -227,7 +225,7 @@ export function OpportunityMap({ markets, selectedId, onSelect }: Props) {
         })}
       </Map>
       <div
-        className="pointer-events-none absolute bottom-3 left-3 z-10 max-w-[10rem] rounded-xl border border-border/60 bg-card/90 px-3 py-2.5 text-[10px] leading-tight shadow-lg shadow-black/5 backdrop-blur-md dark:shadow-black/30"
+        className="pointer-events-none absolute bottom-3 left-3 z-10 max-w-40 rounded-xl border border-border/60 bg-card/90 px-3 py-2.5 text-[10px] leading-tight shadow-lg shadow-black/5 backdrop-blur-md dark:shadow-black/30"
         aria-hidden
       >
         <p className="mb-2 font-heading text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">

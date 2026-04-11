@@ -1,21 +1,17 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import type { AIExplanation } from "@/lib/schemas/ai-insight";
+import { cn } from "@/lib/utils";
 
 type Props = {
   explanation: AIExplanation | undefined;
   isLoading: boolean;
   cached?: boolean;
   onFeedback?: (helpful: boolean) => void;
+  embedded?: boolean;
 };
 
 /**
@@ -26,19 +22,17 @@ export function MarketExplanationCard({
   isLoading,
   cached,
   onFeedback,
+  embedded = false,
 }: Props) {
+  const cardRadius = embedded ? "rounded-xl" : "rounded-2xl";
+
   if (isLoading) {
     return (
-      <Card className="rounded-2xl shadow-premium">
-        <CardHeader className="border-b border-border/50 bg-muted/10 py-3.5 dark:bg-muted/5">
+      <Card className={cn("shadow-premium", cardRadius)}>
+        <CardHeader className="space-y-0 border-b border-border/50 bg-muted/10 py-2.5 dark:bg-muted/5">
           <CardTitle className="text-sm font-semibold">AI insight</CardTitle>
-          <CardDescription className="text-xs">
-            Generating a short narrative from the metrics above…
-          </CardDescription>
         </CardHeader>
-        <CardContent className="pt-3 text-xs text-muted-foreground">
-          Rankings are already final; this layer only explains tradeoffs in prose.
-        </CardContent>
+        <CardContent className="py-3 text-xs text-muted-foreground">Generating…</CardContent>
       </Card>
     );
   }
@@ -48,8 +42,8 @@ export function MarketExplanationCard({
   }
 
   return (
-    <Card className="rounded-2xl shadow-premium">
-      <CardHeader className="space-y-1 border-b border-border/50 bg-muted/10 pb-3.5 dark:bg-muted/5">
+    <Card className={cn("shadow-premium", cardRadius)}>
+      <CardHeader className="space-y-0 border-b border-border/50 bg-muted/10 py-2.5 dark:bg-muted/5 sm:py-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <CardTitle className="text-sm font-semibold">AI insight</CardTitle>
           {cached != null ? (
@@ -58,11 +52,8 @@ export function MarketExplanationCard({
             </span>
           ) : null}
         </div>
-        <CardDescription className="text-xs leading-relaxed">
-          Based on the numbers in this panel—not a second ranking pass.
-        </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4 pt-4 text-sm">
+      <CardContent className={cn("text-sm", embedded ? "space-y-3 pt-3" : "space-y-4 pt-4")}>
         <p className="leading-relaxed text-foreground">{explanation.summary}</p>
         <div>
           <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">

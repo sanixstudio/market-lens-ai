@@ -1,5 +1,7 @@
 "use client";
 
+import { ChevronDown } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import type { CompetitionPreference } from "@/lib/schemas/market";
 
 export type FilterValues = {
@@ -35,7 +38,7 @@ type Props = {
 };
 
 /**
- * Compact filter toolbar: role, pay floor, geography, freshness, scoring preference.
+ * Single primary row + optional advanced (freshness, ranking weight).
  */
 export function MarketSearchFilters({
   values,
@@ -44,25 +47,26 @@ export function MarketSearchFilters({
   onReset,
   isSearching,
 }: Props) {
-  return (
-    <header className="border-t border-border/50 bg-gradient-to-b from-muted/50 to-muted/25 dark:from-muted/20 dark:to-muted/10">
-      <div className="mx-auto max-w-[1600px] px-4 py-4 sm:py-5">
-        <div className="mb-4 flex flex-col gap-1.5 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 className="font-heading text-sm font-semibold tracking-tight text-foreground">
-              Search criteria
-            </h2>
-            <p className="mt-0.5 max-w-lg text-xs leading-relaxed text-muted-foreground">
-              Tune role, pay floor, geography, and how rankings weight saturation vs
-              activity. Salary filter uses annual USD (we match weekly pay on listings).
-            </p>
-          </div>
-        </div>
+  const [advancedOpen, setAdvancedOpen] = useState(false);
+  const advancedRef = useRef<HTMLDivElement>(null);
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-12 lg:items-end lg:gap-x-4 lg:gap-y-3">
-          <div className="space-y-1.5 lg:col-span-3">
-            <Label htmlFor="specialty" className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-              Role / track
+  useEffect(() => {
+    if (!advancedOpen) return;
+    const close = (e: MouseEvent) => {
+      if (advancedRef.current?.contains(e.target as Node)) return;
+      setAdvancedOpen(false);
+    };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, [advancedOpen]);
+
+  return (
+    <div className="shrink-0 border-b border-border/50 bg-muted/25 dark:bg-muted/15">
+      <div className="mx-auto max-w-[1600px] px-3 py-2 sm:px-4">
+        <div className="flex flex-wrap items-end gap-2 sm:gap-2.5">
+          <div className="w-[min(100%,11rem)] shrink-0 sm:w-44">
+            <Label htmlFor="specialty" className="sr-only">
+              Role
             </Label>
             <Select
               value={values.specialty}
@@ -72,9 +76,9 @@ export function MarketSearchFilters({
             >
               <SelectTrigger
                 id="specialty"
-                className="h-9 w-full rounded-xl border-border/80 bg-card shadow-sm transition-shadow hover:shadow-md"
+                className="h-8 w-full rounded-lg border-border/70 bg-card text-xs sm:h-9 sm:text-sm"
               >
-                <SelectValue placeholder="Role / track" />
+                <SelectValue placeholder="Role" />
               </SelectTrigger>
               <SelectContent>
                 {ROLE_TRACKS.map((s) => (
@@ -86,92 +90,124 @@ export function MarketSearchFilters({
             </Select>
           </div>
 
-          <div className="space-y-1.5 lg:col-span-2">
-            <Label htmlFor="minPay" className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-              Min annual salary ($)
+          <div className="w-24 shrink-0 sm:w-28">
+            <Label htmlFor="minPay" className="sr-only">
+              Min annual salary
             </Label>
             <Input
               id="minPay"
               type="number"
               min={0}
               step={5000}
-              placeholder="e.g. 150000"
-              className="h-9 rounded-xl border-border/80 bg-card shadow-sm transition-shadow focus-visible:shadow-md"
+              placeholder="Min $/yr"
+              title="Minimum annual salary (USD)"
+              className="h-8 rounded-lg border-border/70 bg-card px-2 text-xs sm:h-9 sm:px-2.5 sm:text-sm"
               value={values.minPay}
               onChange={(e) => onChange({ ...values, minPay: e.target.value })}
             />
           </div>
 
-          <div className="space-y-1.5 lg:col-span-2">
-            <Label htmlFor="states" className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-              States (comma codes)
+          <div className="min-w-24 flex-1 sm:max-w-40">
+            <Label htmlFor="states" className="sr-only">
+              States
             </Label>
             <Input
               id="states"
-              placeholder="CA, AZ, TX"
-              className="h-9 rounded-xl border-border/80 bg-card shadow-sm transition-shadow focus-visible:shadow-md"
+              placeholder="States e.g. CA,TX"
+              title="Comma-separated state codes"
+              className="h-8 rounded-lg border-border/70 bg-card px-2 text-xs sm:h-9 sm:text-sm"
               value={values.states}
               onChange={(e) => onChange({ ...values, states: e.target.value })}
             />
           </div>
 
-          <div className="space-y-1.5 lg:col-span-2">
-            <Label htmlFor="freshness" className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-              Freshness (days, max)
-            </Label>
-            <Input
-              id="freshness"
-              type="number"
-              min={1}
-              max={90}
-              placeholder="Optional"
-              className="h-9 rounded-xl border-border/80 bg-card shadow-sm transition-shadow focus-visible:shadow-md"
-              value={values.freshnessDays}
-              onChange={(e) => onChange({ ...values, freshnessDays: e.target.value })}
-            />
-          </div>
-
-          <div className="space-y-1.5 lg:col-span-3">
-            <Label className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-              Ranking preference
-            </Label>
-            <Select
-              value={values.competitionPreference}
-              onValueChange={(competitionPreference) => {
-                if (!competitionPreference) return;
-                onChange({
-                  ...values,
-                  competitionPreference: competitionPreference as CompetitionPreference,
-                });
-              }}
-            >
-              <SelectTrigger className="h-9 w-full rounded-xl border-border/80 bg-card shadow-sm transition-shadow hover:shadow-md">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="low">Favor lower saturation</SelectItem>
-                <SelectItem value="balanced">Balanced</SelectItem>
-                <SelectItem value="high-opportunity">Favor active markets</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex flex-wrap gap-2 pt-1 sm:col-span-2 lg:col-span-12 lg:justify-end">
+          <div className="relative" ref={advancedRef}>
             <Button
               type="button"
-              size="lg"
+              variant="outline"
+              size="sm"
+              aria-expanded={advancedOpen}
+              className={cn(
+                "h-8 gap-1 rounded-lg px-2.5 text-xs sm:h-9",
+                advancedOpen && "border-primary/40 bg-primary/5"
+              )}
+              onClick={() => setAdvancedOpen((o) => !o)}
+            >
+              More
+              <ChevronDown
+                className={cn("size-3.5 transition-transform", advancedOpen && "rotate-180")}
+                aria-hidden
+              />
+            </Button>
+            {advancedOpen ? (
+              <div
+                className="absolute right-0 top-full z-30 mt-1 flex w-[min(100vw-1.5rem,18rem)] flex-col gap-2.5 rounded-xl border border-border/70 bg-card p-3 shadow-lg dark:shadow-black/40"
+                role="region"
+                aria-label="Advanced filters"
+              >
+                <div className="space-y-1">
+                  <Label htmlFor="freshness" className="text-[11px] text-muted-foreground">
+                    Max listing age (days)
+                  </Label>
+                  <Input
+                    id="freshness"
+                    type="number"
+                    min={1}
+                    max={90}
+                    placeholder="Any"
+                    className="h-8 rounded-lg text-sm"
+                    value={values.freshnessDays}
+                    onChange={(e) => onChange({ ...values, freshnessDays: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-[11px] text-muted-foreground">Rank by</Label>
+                  <Select
+                    value={values.competitionPreference}
+                    onValueChange={(competitionPreference) => {
+                      if (!competitionPreference) return;
+                      onChange({
+                        ...values,
+                        competitionPreference: competitionPreference as CompetitionPreference,
+                      });
+                    }}
+                  >
+                    <SelectTrigger className="h-8 rounded-lg text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">Less saturated markets</SelectItem>
+                      <SelectItem value="balanced">Balanced</SelectItem>
+                      <SelectItem value="high-opportunity">More active markets</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            ) : null}
+          </div>
+
+          <div className="ml-auto flex shrink-0 items-center gap-2">
+            <Button
+              type="button"
+              size="sm"
+              className="h-8 rounded-lg px-4 sm:h-9"
               onClick={onSubmit}
               disabled={isSearching}
-              className="min-w-36 rounded-xl"
             >
-              {isSearching ? "Searching…" : "Run search"}
+              {isSearching ? "…" : "Search"}
             </Button>
-            <Button type="button" variant="outline" onClick={onReset} className="rounded-xl">
-              Reset filters
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="h-8 px-2 text-xs text-muted-foreground sm:h-9"
+              onClick={onReset}
+            >
+              Reset
             </Button>
           </div>
         </div>
       </div>
-    </header>
+    </div>
   );
 }

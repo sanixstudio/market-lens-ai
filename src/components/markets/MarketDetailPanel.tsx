@@ -13,6 +13,7 @@ import {
 import { formatScore, formatTechPay } from "@/lib/formatters";
 import type { MarketDetailResponse } from "@/lib/schemas/market";
 import type { ExplainMarketResponse } from "@/lib/schemas/ai-insight";
+import { cn } from "@/lib/utils";
 import { ConfidenceBadge } from "./ConfidenceBadge";
 import { MarketExplanationCard } from "./MarketExplanationCard";
 
@@ -22,6 +23,8 @@ type Props = {
   queryId: string | null;
   onCompare: () => void;
   onSave: () => void;
+  /** Tighter layout inside a scroll region (e.g. Details tab). */
+  embedded?: boolean;
 };
 
 async function postFeedback(body: {
@@ -45,6 +48,7 @@ export function MarketDetailPanel({
   queryId,
   onCompare,
   onSave,
+  embedded = false,
 }: Props) {
   const detailQuery = useQuery({
     queryKey: ["market-detail", regionId, specialty],
@@ -76,14 +80,21 @@ export function MarketDetailPanel({
     enabled: !!regionId && !!queryId,
   });
 
+  const stackGap = embedded ? "gap-2" : "gap-3 lg:gap-4";
+  const cardRadius = embedded ? "rounded-xl" : "rounded-2xl";
+
   if (!regionId) {
     return (
-      <Card className="rounded-2xl border-dashed border-primary/20 bg-card/50 shadow-sm backdrop-blur-sm">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold tracking-tight">Selection</CardTitle>
-          <CardDescription className="text-xs leading-relaxed">
-            Choose a market from the map or the ranked list to see pay breakdowns, sample
-            roles, and an AI summary grounded in these metrics.
+      <Card
+        className={cn(
+          "border-dashed border-primary/20 bg-card/50 shadow-sm",
+          cardRadius
+        )}
+      >
+        <CardHeader className="space-y-0 pb-2 pt-3">
+          <CardTitle className="text-sm font-semibold">Details</CardTitle>
+          <CardDescription className="text-xs">
+            Select a region on the map or in Rankings.
           </CardDescription>
         </CardHeader>
       </Card>
@@ -92,10 +103,9 @@ export function MarketDetailPanel({
 
   if (detailQuery.isLoading) {
     return (
-      <Card className="rounded-2xl shadow-premium">
-        <CardHeader>
+      <Card className={cn("shadow-premium", cardRadius)}>
+        <CardHeader className="space-y-0 py-3">
           <CardTitle className="text-sm font-semibold">Loading…</CardTitle>
-          <CardDescription className="text-xs">Fetching market detail</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -103,12 +113,12 @@ export function MarketDetailPanel({
 
   if (detailQuery.isError || !detailQuery.data) {
     return (
-      <Card className="rounded-2xl border-destructive/35 shadow-premium">
-        <CardHeader>
+      <Card className={cn("border-destructive/35 shadow-premium", cardRadius)}>
+        <CardHeader className="space-y-0 py-3">
           <CardTitle className="text-sm font-semibold text-destructive">
             Could not load market
           </CardTitle>
-          <CardDescription className="text-xs">Try selecting the region again.</CardDescription>
+          <CardDescription className="text-xs">Try again.</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -120,33 +130,42 @@ export function MarketDetailPanel({
     j.listingUrl?.includes("remotive.com")
   );
 
+  const contentPad = embedded ? "space-y-3 pt-3" : "space-y-4 pt-4";
+  const headerPad = embedded ? "pb-2.5 pt-3" : "pb-3.5";
+
   return (
-    <div className="flex flex-col gap-3 lg:gap-4">
-      <Card className="rounded-2xl shadow-premium">
-        <CardHeader className="space-y-2 border-b border-border/50 bg-muted/10 pb-3.5 dark:bg-muted/5">
+    <div className={cn("flex flex-col", stackGap)}>
+      <Card className={cn("shadow-premium", cardRadius)}>
+        <CardHeader
+          className={cn(
+            "space-y-2 border-b border-border/50 bg-muted/10 dark:bg-muted/5",
+            headerPad
+          )}
+        >
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div>
               <CardTitle className="text-base font-semibold leading-tight">
                 {d.regionName}
               </CardTitle>
-              <CardDescription className="mt-1 text-xs">
-                {d.specialty} · Opportunity score {formatScore(d.metrics.opportunityScore)}
+              <CardDescription className="mt-0.5 text-xs">
+                {d.specialty} · {formatScore(d.metrics.opportunityScore)}
               </CardDescription>
             </div>
             <ConfidenceBadge score={d.metrics.confidenceScore} />
           </div>
           {lowConfidence ? (
-            <p className="rounded-md bg-amber-500/10 px-2.5 py-2 text-xs text-amber-950 dark:text-amber-100">
-              Limited data for this bucket—use metrics as directional only.
+            <p className="rounded-md bg-amber-500/10 px-2 py-1.5 text-[11px] text-amber-950 dark:text-amber-100">
+              Thin data—treat metrics as directional.
             </p>
           ) : null}
         </CardHeader>
-        <CardContent className="space-y-4 pt-4 text-sm">
-          <p className="text-xs text-muted-foreground">
-            Compensation is weekly equivalent (FTE annual ÷ 52) when salary text was
-            available on listings.
-          </p>
-          <div className="grid grid-cols-2 gap-3 rounded-xl border border-border/50 bg-gradient-to-br from-muted/50 to-muted/25 p-3.5 sm:grid-cols-3 dark:from-muted/30 dark:to-muted/10">
+        <CardContent className={cn("text-sm", contentPad)}>
+          <div
+            className={cn(
+              "grid grid-cols-2 gap-2.5 rounded-xl border border-border/50 bg-linear-to-br from-muted/50 to-muted/25 p-3 sm:grid-cols-3 dark:from-muted/30 dark:to-muted/10",
+              embedded && "gap-2 p-2.5"
+            )}
+          >
             <div>
               <p className="text-xs text-muted-foreground">Median</p>
               <p className="mt-0.5 font-semibold tabular-nums">
@@ -190,7 +209,7 @@ export function MarketDetailPanel({
               className="rounded-xl"
               onClick={onCompare}
             >
-              Compare with another market
+              Compare
             </Button>
             <Button
               type="button"
@@ -215,6 +234,7 @@ export function MarketDetailPanel({
       </Card>
 
       <MarketExplanationCard
+        embedded={embedded}
         explanation={explainQuery.data?.explanation}
         isLoading={explainQuery.isLoading}
         cached={explainQuery.data?.cached}
@@ -231,14 +251,11 @@ export function MarketDetailPanel({
         }
       />
 
-      <Card className="rounded-2xl shadow-premium">
-        <CardHeader className="border-b border-border/50 bg-muted/10 py-3.5 dark:bg-muted/5">
-          <CardTitle className="text-sm font-semibold tracking-tight">Sample listings</CardTitle>
-          <CardDescription className="text-xs">
-            Recent roles in this region for {d.specialty}
-          </CardDescription>
+      <Card className={cn("shadow-premium", cardRadius)}>
+        <CardHeader className="space-y-0 border-b border-border/50 bg-muted/10 py-2.5 dark:bg-muted/5 sm:py-3">
+          <CardTitle className="text-sm font-semibold">Listings</CardTitle>
         </CardHeader>
-        <CardContent className="pt-3 text-sm">
+        <CardContent className="pt-2 text-sm sm:pt-3">
           {d.sampleJobs.length === 0 ? (
             <p className="text-xs text-muted-foreground">No sample rows for this slice.</p>
           ) : (
@@ -266,8 +283,8 @@ export function MarketDetailPanel({
             </ul>
           )}
           {hasRemotiveSamples ? (
-            <p className="mt-3 border-t border-border/60 pt-3 text-xs text-muted-foreground">
-              Some links via{" "}
+            <p className="mt-2 border-t border-border/60 pt-2 text-[11px] text-muted-foreground">
+              Some roles:{" "}
               <a
                 href="https://remotive.com"
                 target="_blank"
@@ -276,7 +293,6 @@ export function MarketDetailPanel({
               >
                 Remotive
               </a>
-              — apply on their site.
             </p>
           ) : null}
         </CardContent>

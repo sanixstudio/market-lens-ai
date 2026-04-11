@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import {
   Card,
   CardContent,
@@ -25,6 +26,8 @@ type Props = {
   queryId: string | null;
   specialty: string;
   className?: string;
+  /** `panel` = no outer card, fills parent height (for tabbed layout). */
+  variant?: "card" | "panel";
 };
 
 async function postFeedback(body: {
@@ -39,8 +42,34 @@ async function postFeedback(body: {
   });
 }
 
+function ListBody({
+  markets,
+  hiddenOpportunities,
+  renderCard,
+}: {
+  markets: MarketItem[];
+  hiddenOpportunities: MarketItem[];
+  renderCard: (m: MarketItem, opts?: { hidden?: boolean }) => ReactNode;
+}) {
+  return (
+    <div className="space-y-4 p-2 sm:p-3">
+      <div className="flex flex-col gap-2">{markets.map((m) => renderCard(m))}</div>
+      {hiddenOpportunities.length > 0 ? (
+        <div className="border-t border-border/50 pt-3">
+          <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+            Also consider
+          </p>
+          <div className="flex flex-col gap-2">
+            {hiddenOpportunities.map((m) => renderCard(m, { hidden: true }))}
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 /**
- * Scrollable ranked list and hidden-opportunity section.
+ * Ranked markets list; use `variant="panel"` inside a fixed-height tab or split pane.
  */
 export function RankedMarketsPanel({
   isLoading,
@@ -51,42 +80,8 @@ export function RankedMarketsPanel({
   queryId,
   specialty,
   className,
+  variant = "card",
 }: Props) {
-  if (isLoading) {
-    return (
-      <Card
-        className={cn(
-          "flex flex-col overflow-hidden rounded-2xl shadow-premium",
-          className
-        )}
-      >
-        <CardHeader className="shrink-0 border-b border-border/50 bg-muted/15 py-3.5 dark:bg-muted/10">
-          <Skeleton className="h-4 w-40 rounded-md" />
-          <Skeleton className="mt-2 h-3 w-56 rounded-md" />
-        </CardHeader>
-        <CardContent className="flex flex-col gap-3 p-4">
-          <Skeleton className="h-24 w-full rounded-xl" />
-          <Skeleton className="h-24 w-full rounded-xl" />
-          <Skeleton className="h-24 w-full rounded-xl" />
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (markets.length === 0) {
-    return (
-      <Card className={cn("rounded-2xl shadow-premium", className)}>
-        <CardHeader>
-          <CardTitle className="text-base">No results</CardTitle>
-          <CardDescription>
-            Nothing matched these filters. Try a lower salary floor, different states, or
-            another role track.
-          </CardDescription>
-        </CardHeader>
-      </Card>
-    );
-  }
-
   const renderCard = (m: MarketItem, opts?: { hidden?: boolean }) => (
     <button
       key={opts?.hidden ? `hidden-${m.regionId}` : m.regionId}
@@ -102,46 +97,113 @@ export function RankedMarketsPanel({
         }
       }}
       className={cn(
-        "w-full rounded-xl border border-border/70 bg-card text-left shadow-sm transition-all duration-200",
-        "hover:border-primary/25 hover:shadow-md hover:-translate-y-px",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "w-full rounded-lg border border-border/70 bg-card text-left shadow-sm transition-all duration-200",
+        "hover:border-primary/30 hover:shadow-md",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         selectedId === m.regionId &&
-          "border-primary/50 bg-primary/[0.07] shadow-md ring-1 ring-primary/25 dark:bg-primary/10"
+          "border-primary/50 bg-primary/[0.07] ring-1 ring-primary/20 dark:bg-primary/10"
       )}
     >
-      <div className="p-3 sm:p-3.5">
+      <div className="p-2.5 sm:p-3">
         <div className="flex items-start justify-between gap-2">
-          <p className="font-heading font-semibold leading-snug text-foreground">
+          <p className="font-heading text-sm font-semibold leading-snug text-foreground">
             {m.regionName}
           </p>
-          <span className="shrink-0 rounded-lg bg-primary/10 px-2 py-0.5 font-mono text-xs font-medium tabular-nums text-primary dark:bg-primary/20">
+          <span className="shrink-0 rounded-md bg-primary/10 px-1.5 py-0.5 font-mono text-[10px] font-medium tabular-nums text-primary dark:bg-primary/20">
             {formatScore(m.opportunityScore)}
           </span>
         </div>
-        <div className="mt-2 flex flex-wrap items-center gap-2">
+        <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
           <ConfidenceBadge score={m.confidenceScore} />
           {opts?.hidden ? (
-            <span className="rounded-md bg-amber-500/15 px-2 py-0.5 text-xs font-medium text-amber-950 dark:text-amber-100">
-              Hidden gem
+            <span className="rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-medium text-amber-950 dark:text-amber-100">
+              Alt pick
             </span>
           ) : null}
         </div>
-        <p className="mt-2 text-xs text-muted-foreground">
-          Median {formatTechPay(m.medianPay)} · {m.activeJobs} active roles
+        <p className="mt-1.5 text-[11px] text-muted-foreground">
+          {formatTechPay(m.medianPay)} median · {m.activeJobs} roles
         </p>
-        <ul className="mt-2 space-y-0.5 border-t border-border/50 pt-2 text-xs text-muted-foreground">
-          {m.topFactors.slice(0, 3).map((f) => (
-            <li key={f} className="flex gap-1.5">
-              <span className="text-primary" aria-hidden>
-                ·
-              </span>
-              <span>{f}</span>
+        <ul className="mt-1.5 space-y-0.5 border-t border-border/40 pt-1.5 text-[11px] text-muted-foreground">
+          {m.topFactors.slice(0, 2).map((f) => (
+            <li key={f} className="truncate">
+              {f}
             </li>
           ))}
         </ul>
       </div>
     </button>
   );
+
+  if (isLoading) {
+    if (variant === "panel") {
+      return (
+        <div className={cn("flex h-full min-h-0 flex-col overflow-hidden", className)}>
+          <div className="flex shrink-0 items-center border-b border-border/50 px-2 py-2">
+            <Skeleton className="h-3 w-32" />
+          </div>
+          <div className="flex flex-1 flex-col gap-2 p-2">
+            <Skeleton className="h-20 w-full rounded-lg" />
+            <Skeleton className="h-20 w-full rounded-lg" />
+            <Skeleton className="h-20 w-full rounded-lg" />
+          </div>
+        </div>
+      );
+    }
+    return (
+      <Card
+        className={cn("flex flex-col overflow-hidden rounded-2xl shadow-premium", className)}
+      >
+        <CardHeader className="shrink-0 border-b border-border/50 py-2.5">
+          <Skeleton className="h-3 w-36" />
+        </CardHeader>
+        <CardContent className="flex flex-col gap-2 p-3">
+          <Skeleton className="h-20 w-full rounded-lg" />
+          <Skeleton className="h-20 w-full rounded-lg" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (markets.length === 0) {
+    if (variant === "panel") {
+      return (
+        <div
+          className={cn(
+            "flex h-full min-h-0 flex-col items-center justify-center p-4 text-center text-sm text-muted-foreground",
+            className
+          )}
+        >
+          No markets match. Loosen filters and search again.
+        </div>
+      );
+    }
+    return (
+      <Card className={cn("rounded-2xl shadow-premium", className)}>
+        <CardHeader>
+          <CardTitle className="text-base">No results</CardTitle>
+          <CardDescription>Adjust filters and run search again.</CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
+
+  if (variant === "panel") {
+    return (
+      <div className={cn("flex h-full min-h-0 flex-col overflow-hidden", className)}>
+        <div className="shrink-0 border-b border-border/50 bg-muted/15 px-2 py-2 text-[11px] font-medium text-muted-foreground dark:bg-muted/10">
+          {specialty} · {markets.length} market{markets.length === 1 ? "" : "s"}
+        </div>
+        <ScrollArea className="min-h-0 flex-1 overflow-hidden">
+          <ListBody
+            markets={markets}
+            hiddenOpportunities={hiddenOpportunities}
+            renderCard={renderCard}
+          />
+        </ScrollArea>
+      </div>
+    );
+  }
 
   return (
     <Card
@@ -150,34 +212,19 @@ export function RankedMarketsPanel({
         className
       )}
     >
-      <CardHeader className="shrink-0 space-y-1 border-b border-border/50 bg-muted/15 py-3.5 dark:bg-muted/10">
-        <CardTitle className="text-sm font-semibold tracking-tight">Ranked markets</CardTitle>
-        <CardDescription className="text-xs leading-relaxed">
-          {specialty} · {markets.length} region{markets.length === 1 ? "" : "s"} · Click
-          to inspect details
+      <CardHeader className="shrink-0 space-y-0 border-b border-border/50 bg-muted/15 py-2.5 dark:bg-muted/10">
+        <CardTitle className="text-sm font-semibold">Rankings</CardTitle>
+        <CardDescription className="text-[11px]">
+          {specialty} · {markets.length} region{markets.length === 1 ? "" : "s"}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex min-h-0 flex-1 flex-col p-0">
-        <ScrollArea className="h-0 min-h-[260px] flex-1">
-          <div className="space-y-5 p-3 sm:p-4">
-            <section aria-label="Top markets">
-              <div className="flex flex-col gap-2.5">{markets.map((m) => renderCard(m))}</div>
-            </section>
-            {hiddenOpportunities.length > 0 ? (
-              <section aria-label="Hidden opportunities" className="border-t border-border/60 pt-4">
-                <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Hidden opportunities
-                </h3>
-                <p className="mb-3 text-xs text-muted-foreground leading-relaxed">
-                  High opportunity score vs peers, often with lower median pay on
-                  paper—worth a second look.
-                </p>
-                <div className="flex flex-col gap-2.5">
-                  {hiddenOpportunities.map((m) => renderCard(m, { hidden: true }))}
-                </div>
-              </section>
-            ) : null}
-          </div>
+        <ScrollArea className="h-0 min-h-[200px] flex-1">
+          <ListBody
+            markets={markets}
+            hiddenOpportunities={hiddenOpportunities}
+            renderCard={renderCard}
+          />
         </ScrollArea>
       </CardContent>
     </Card>
