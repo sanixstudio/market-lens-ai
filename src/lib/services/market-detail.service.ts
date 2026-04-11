@@ -102,6 +102,7 @@ export async function getMarketDetail(
       city: j.city,
       state: j.state,
       grossWeeklyPay: j.grossWeeklyPay,
+      listingUrl: j.listingUrl ?? undefined,
     })),
   };
 }

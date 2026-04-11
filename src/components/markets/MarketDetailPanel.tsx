@@ -13,6 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { formatScore, formatTechPay } from "@/lib/formatters";
 import type { MarketDetailResponse } from "@/lib/schemas/market";
 import type { ExplainMarketResponse } from "@/lib/schemas/ai-insight";
+import { ExternalLink } from "lucide-react";
 import { ConfidenceBadge } from "./ConfidenceBadge";
 import { MarketExplanationCard } from "./MarketExplanationCard";
 
@@ -112,6 +113,9 @@ export function MarketDetailPanel({
 
   const d = detailQuery.data;
   const lowConfidence = d.metrics.confidenceScore < 0.45;
+  const hasRemotiveSamples = d.sampleJobs.some((j) =>
+    j.listingUrl?.includes("remotive.com")
+  );
 
   return (
     <div className="flex flex-col gap-4">
@@ -222,10 +226,35 @@ export function MarketDetailPanel({
                     "—"}{" "}
                   · {formatTechPay(j.grossWeeklyPay)}
                 </p>
+                {j.listingUrl ? (
+                  <a
+                    href={j.listingUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-primary underline-offset-4 hover:underline"
+                  >
+                    View listing
+                    <ExternalLink className="size-3 shrink-0" aria-hidden />
+                  </a>
+                ) : null}
                 <Separator className="mt-2" />
               </div>
             ))
           )}
+          {hasRemotiveSamples ? (
+            <p className="text-xs text-muted-foreground">
+              Sample roles include listings from{" "}
+              <a
+                href="https://remotive.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-foreground underline-offset-4 hover:underline"
+              >
+                Remotive
+              </a>
+              ; apply on their site.
+            </p>
+          ) : null}
         </CardContent>
       </Card>
     </div>

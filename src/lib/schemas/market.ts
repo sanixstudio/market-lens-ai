@@ -75,6 +75,8 @@ export const marketDetailResponseSchema = z.object({
       city: z.string().nullable(),
       state: z.string().nullable(),
       grossWeeklyPay: z.number().nullable(),
+      /** Original job board URL when available (e.g. Remotive attribution). */
+      listingUrl: z.string().nullable().optional(),
     })
   ),
 });
