@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  serverExternalPackages: ["postgres"],
+  transpilePackages: ["mapbox-gl"],
 };
 
 export default nextConfig;
