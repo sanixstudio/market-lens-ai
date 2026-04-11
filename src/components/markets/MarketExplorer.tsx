@@ -44,7 +44,7 @@ function buildSearchParams(f: FilterValues): URLSearchParams {
 }
 
 /**
- * Map-first explorer: filters, ranked panel, map, detail, compare, and async AI layer.
+ * Filters, Mapbox map, ranked panel, detail, compare, and async AI explanations.
  */
 export function MarketExplorer() {
   const [filters, setFilters] = useState<FilterValues>(defaultFilters);
@@ -72,10 +72,7 @@ export function MarketExplorer() {
   });
 
   const data = searchQuery.data;
-  const markets = useMemo(
-    () => data?.markets ?? [],
-    [data?.markets]
-  );
+  const markets = useMemo(() => data?.markets ?? [], [data?.markets]);
   const hidden = data?.hiddenOpportunities ?? [];
   const queryId = data?.queryId ?? null;
 

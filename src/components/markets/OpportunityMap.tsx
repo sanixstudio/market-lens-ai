@@ -1,11 +1,9 @@
 "use client";
 
 /**
- * Mapbox stack (latest react-map-gl Mapbox integration):
- * - Map component: https://visgl.github.io/react-map-gl/docs/api-reference/mapbox/map
- * - Mapbox tokens: https://visgl.github.io/react-map-gl/docs/get-started/mapbox-tokens
- * - Map GL JS `Map`: https://docs.mapbox.com/mapbox-gl-js/api/map/
- * - Next.js: expose the token as `NEXT_PUBLIC_MAPBOX_TOKEN` so the client bundle can read it.
+ * Mapbox stack (react-map-gl Mapbox integration):
+ * @see https://visgl.github.io/react-map-gl/docs/api-reference/mapbox/map
+ * Token: `NEXT_PUBLIC_MAPBOX_TOKEN` in `.env.local`.
  */
 
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -24,7 +22,6 @@ import Map, {
 } from "react-map-gl/mapbox";
 import type { LngLatBoundsLike, Map as MapboxMap, MapEvent } from "mapbox-gl";
 
-/** @see https://docs.mapbox.com/mapbox-gl-js/guides/styles/#mapbox-core-styles */
 const MAP_STYLE = "mapbox://styles/mapbox/light-v11";
 
 function readMapboxAccessToken(): string {
@@ -35,10 +32,6 @@ function readMapboxAccessToken(): string {
   );
 }
 
-/**
- * Uncontrolled map: stable `initialViewState` only (react-map-gl state-management pattern).
- * @see https://visgl.github.io/react-map-gl/docs/get-started/state-management
- */
 const US_OVERVIEW = {
   longitude: -98.35,
   latitude: 39.5,
@@ -47,10 +40,6 @@ const US_OVERVIEW = {
   bearing: 0,
 } as const;
 
-/**
- * Mapbox `fitBounds` options; `linear: true` uses `easeTo` instead of default `flyTo`.
- * @see https://docs.mapbox.com/mapbox-gl-js/api/properties/#fitboundsoptions
- */
 const FIT_BOUNDS_OPTIONS = {
   padding: { top: 56, bottom: 52, left: 52, right: 52 },
   maxZoom: 6.25,
@@ -156,10 +145,6 @@ export function OpportunityMap({ markets, selectedId, onSelect }: Props) {
     return "bg-slate-400";
   }, []);
 
-  /**
-   * `onLoad` callback: https://visgl.github.io/react-map-gl/docs/api-reference/mapbox/map#callbacks
-   * Scroll zoom tuning: https://docs.mapbox.com/mapbox-gl-js/api/handlers/#scrollzoomhandler
-   */
   const handleLoad = useCallback((e: MapEvent) => {
     const map = e.target;
     map.scrollZoom.setWheelZoomRate(1 / 600);
@@ -186,7 +171,6 @@ export function OpportunityMap({ markets, selectedId, onSelect }: Props) {
           <code className="rounded bg-muted px-1">.env.local</code> and restart the dev server.
         </p>
         <p className="text-xs">
-          See react-map-gl:{" "}
           <a
             className="text-primary underline"
             href="https://visgl.github.io/react-map-gl/docs/get-started/mapbox-tokens"

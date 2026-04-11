@@ -8,13 +8,6 @@ export const competitionPreferenceSchema = z.enum([
 
 export type CompetitionPreference = z.infer<typeof competitionPreferenceSchema>;
 
-export const boundsSchema = z.object({
-  north: z.number(),
-  south: z.number(),
-  east: z.number(),
-  west: z.number(),
-});
-
 export const searchMarketsQuerySchema = z.object({
   specialty: z.string().min(1),
   minPay: z.coerce.number().optional(),

@@ -33,16 +33,3 @@ export async function listActiveJobsByRegionAndSpecialty(
     .orderBy(sql`random()`)
     .limit(sampleLimit);
 }
-
-export async function listRegionIdsForSpecialty(
-  db: PostgresJsDatabase<typeof schema>,
-  specialty: string
-): Promise<string[]> {
-  const rows = await db
-    .selectDistinct({ regionId: schema.jobs.regionId })
-    .from(schema.jobs)
-    .where(
-      and(eq(schema.jobs.specialty, specialty), eq(schema.jobs.isActive, true))
-    );
-  return rows.map((r) => r.regionId);
-}

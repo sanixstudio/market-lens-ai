@@ -2,7 +2,7 @@ import OpenAI from "openai";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "@/lib/db/schema";
 import { hashExplainCacheKey } from "@/lib/hash-query";
-import { findValidAiCache, upsertAiCache } from "@/lib/services/cache.service";
+import { findValidAiCache, upsertAiCache } from "@/lib/repositories/ai-cache.repository";
 import { getUserQueryById } from "@/lib/repositories/markets.repository";
 import {
   type AIExplanation,

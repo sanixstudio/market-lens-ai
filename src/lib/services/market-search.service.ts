@@ -4,10 +4,7 @@ import {
   getRegionsByIds,
   insertUserQuery,
 } from "@/lib/repositories/markets.repository";
-import {
-  listActiveJobsBySpecialty,
-  listRegionIdsForSpecialty,
-} from "@/lib/repositories/jobs.repository";
+import { listActiveJobsBySpecialty } from "@/lib/repositories/jobs.repository";
 import type { SearchMarketsQuery } from "@/lib/schemas/market";
 import type { SearchMarketsResponse } from "@/lib/schemas/market";
 import { aggregateJobsToRawMetrics, groupJobsByRegion } from "./market-aggregation.service";
@@ -280,14 +277,4 @@ export async function searchMarkets(
     queryId,
     ...ranked,
   };
-}
-
-/**
- * Region IDs that have any active jobs for the specialty (for filter dropdowns).
- */
-export async function listSpecialtyRegionIds(
-  db: PostgresJsDatabase<typeof schema>,
-  specialty: string
-): Promise<string[]> {
-  return listRegionIdsForSpecialty(db, specialty);
 }

@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "MarketLens AI",
   description:
-    "Map-based tech job market intelligence for location-aware career decisions.",
+    "Tech job market intelligence by metro — ranked listings, metrics, and AI-grounded commentary.",
 };
 
 export default function RootLayout({
