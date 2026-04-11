@@ -83,6 +83,24 @@ const REGIONS: (typeof schema.marketRegions.$inferInsert)[] = [
     centroidLng: -115.1398,
     geohash: "9qqju",
   },
+  {
+    id: "reg_remote_us",
+    regionType: "remote",
+    regionName: "Remote (United States)",
+    state: null,
+    centroidLat: 39.8283,
+    centroidLng: -98.5795,
+    geohash: null,
+  },
+  {
+    id: "reg_remote_global",
+    regionType: "remote",
+    regionName: "Remote (Worldwide)",
+    state: null,
+    centroidLat: 15,
+    centroidLng: 0,
+    geohash: null,
+  },
 ];
 
 type JobInsert = typeof schema.jobs.$inferInsert;

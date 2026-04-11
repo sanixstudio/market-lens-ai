@@ -23,9 +23,13 @@ export const marketRegions = pgTable("market_regions", {
 });
 
 /** Raw job listings after normalization. */
-export const jobs = pgTable("jobs", {
+export const jobs = pgTable(
+  "jobs",
+  {
   id: text("id").primaryKey(),
   sourceId: text("source_id").notNull(),
+  /** Original listing URL (e.g. for attribution when using third-party feeds). */
+  listingUrl: text("listing_url"),
   title: text("title").notNull(),
   specialty: text("specialty").notNull(),
   discipline: text("discipline"),
@@ -45,7 +49,9 @@ export const jobs = pgTable("jobs", {
     .references(() => marketRegions.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-});
+  },
+  (t) => [uniqueIndex("jobs_source_id_unique").on(t.sourceId)]
+);
 
 export const marketMetrics = pgTable(
   "market_metrics",
