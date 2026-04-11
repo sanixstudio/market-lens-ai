@@ -12,7 +12,7 @@ export function ConfidenceBadge({ score }: { score: number }) {
     <Badge
       variant="outline"
       className={cn(
-        "rounded-lg border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide",
+        "rounded-md border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide",
         level === "high" &&
           "border-emerald-500/35 bg-emerald-500/10 text-emerald-900 dark:border-emerald-400/30 dark:bg-emerald-500/15 dark:text-emerald-100",
         level === "medium" &&

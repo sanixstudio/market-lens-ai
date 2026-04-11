@@ -6,6 +6,8 @@ import { useCallback, useMemo, useState } from "react";
 import {
   Card,
   CardContent,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -111,23 +113,29 @@ export function MarketExplorer() {
 
   return (
     <div className="mesh-page flex h-dvh max-h-dvh flex-col overflow-hidden">
-      <AppHeader />
-      <MarketSearchFilters
-        values={filters}
-        onChange={setFilters}
-        onSubmit={runSearch}
-        onReset={() => {
-          setFilters(defaultFilters);
-          setSearchKey(buildSearchParams(defaultFilters).toString());
-        }}
-        isSearching={searchQuery.isFetching}
-      />
+      {/*
+        Chrome must stack above `main`: the "More" filter popover extends over the map.
+        Without z-index, later DOM siblings (main) paint on top and hide dropdowns.
+      */}
+      <div className="relative z-[100] isolate shrink-0">
+        <AppHeader />
+        <MarketSearchFilters
+          values={filters}
+          onChange={setFilters}
+          onSubmit={runSearch}
+          onReset={() => {
+            setFilters(defaultFilters);
+            setSearchKey(buildSearchParams(defaultFilters).toString());
+          }}
+          isSearching={searchQuery.isFetching}
+        />
+      </div>
 
-      <main className="mx-auto flex min-h-0 w-full max-w-[1600px] flex-1 flex-col gap-2 overflow-hidden px-3 pb-2 pt-2 sm:px-4 sm:pb-3 sm:pt-2 lg:gap-3">
+      <main className="relative z-0 mx-auto flex min-h-0 w-full max-w-[1600px] flex-1 flex-col gap-2 overflow-hidden px-3 pb-2 pt-2 sm:px-4 sm:pb-3 sm:pt-2 lg:gap-3">
         {searchQuery.isError ? (
           <div
             role="alert"
-            className="shrink-0 rounded-xl border border-destructive/30 bg-destructive/5 px-3 py-3 text-sm shadow-sm"
+            className="shrink-0 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm"
           >
             <p className="font-heading font-semibold text-destructive">Search failed</p>
             <p className="mt-1 text-destructive/90">
@@ -147,8 +155,13 @@ export function MarketExplorer() {
             "lg:grid-cols-[minmax(0,1fr)_minmax(280px,400px)] lg:grid-rows-1 lg:items-stretch"
           )}
         >
-          <Card className="flex min-h-0 flex-col overflow-hidden rounded-xl border-border/60 shadow-premium lg:rounded-2xl p-0">
-            <CardContent className="relative min-h-0 flex-1 bg-muted/10 p-0">
+          <Card className="panel-elevated shadow-sm flex min-h-0 flex-col overflow-hidden p-0">
+            <CardHeader className="shrink-0 space-y-0 border-b border-border/40 bg-muted/25 py-2 pl-3 pr-3 dark:border-border/35 dark:bg-muted/20">
+              <CardTitle className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                Map
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="relative z-0 min-h-0 flex-1 bg-muted/30 p-0 dark:bg-muted/20">
               <OpportunityMap
                 markets={mapMarkets}
                 selectedId={selectedId}
@@ -157,9 +170,9 @@ export function MarketExplorer() {
             </CardContent>
           </Card>
 
-          <div className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-border/60 bg-card shadow-premium lg:rounded-2xl">
+          <div className="panel-elevated shadow-sm flex min-h-0 flex-col overflow-hidden p-0">
             <div
-              className="flex shrink-0 gap-0.5 border-b border-border/50 bg-muted/20 p-1 dark:bg-muted/10"
+              className="flex shrink-0 gap-0.5 border-b border-border/40 bg-muted/40 p-1 dark:border-border/35 dark:bg-muted/25"
               role="tablist"
               aria-label="Results"
             >
@@ -168,9 +181,9 @@ export function MarketExplorer() {
                 role="tab"
                 aria-selected={rightTab === "rankings"}
                 className={cn(
-                  "flex-1 rounded-lg py-2 text-xs font-medium transition-colors",
+                  "flex-1 rounded-md py-2 text-xs font-medium transition-colors",
                   rightTab === "rankings"
-                    ? "bg-card text-foreground shadow-sm ring-1 ring-border/60"
+                    ? "bg-background text-foreground shadow-sm dark:bg-card"
                     : "text-muted-foreground hover:text-foreground"
                 )}
                 onClick={() => setRightTab("rankings")}
@@ -182,9 +195,9 @@ export function MarketExplorer() {
                 role="tab"
                 aria-selected={rightTab === "details"}
                 className={cn(
-                  "flex-1 rounded-lg py-2 text-xs font-medium transition-colors",
+                  "flex-1 rounded-md py-2 text-xs font-medium transition-colors",
                   rightTab === "details"
-                    ? "bg-card text-foreground shadow-sm ring-1 ring-border/60"
+                    ? "bg-background text-foreground shadow-sm dark:bg-card"
                     : "text-muted-foreground hover:text-foreground"
                 )}
                 onClick={() => setRightTab("details")}

@@ -97,11 +97,11 @@ export function RankedMarketsPanel({
         }
       }}
       className={cn(
-        "w-full rounded-lg border border-border/70 bg-card text-left shadow-sm transition-all duration-200",
-        "hover:border-primary/30 hover:shadow-md",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "w-full rounded-lg border border-border/40 bg-card text-left shadow-sm transition-colors",
+        "hover:border-border hover:bg-muted/30 dark:border-border/35 dark:hover:bg-muted/20",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
         selectedId === m.regionId &&
-          "border-primary/50 bg-primary/[0.07] ring-1 ring-primary/20 dark:bg-primary/10"
+          "border-primary/40 bg-primary/[0.06] dark:border-primary/45 dark:bg-primary/10"
       )}
     >
       <div className="p-2.5 sm:p-3">
@@ -109,7 +109,7 @@ export function RankedMarketsPanel({
           <p className="font-heading text-sm font-semibold leading-snug text-foreground">
             {m.regionName}
           </p>
-          <span className="shrink-0 rounded-md bg-primary/10 px-1.5 py-0.5 font-mono text-[10px] font-medium tabular-nums text-primary dark:bg-primary/20">
+          <span className="shrink-0 rounded-md bg-muted px-2 py-0.5 font-mono text-[10px] font-medium tabular-nums text-foreground dark:bg-muted/80">
             {formatScore(m.opportunityScore)}
           </span>
         </div>
@@ -152,7 +152,7 @@ export function RankedMarketsPanel({
     }
     return (
       <Card
-        className={cn("flex flex-col overflow-hidden rounded-2xl shadow-premium", className)}
+        className={cn("flex flex-col overflow-hidden rounded-lg border border-border/40 shadow-sm dark:border-border/35", className)}
       >
         <CardHeader className="shrink-0 border-b border-border/50 py-2.5">
           <Skeleton className="h-3 w-36" />
@@ -179,7 +179,7 @@ export function RankedMarketsPanel({
       );
     }
     return (
-      <Card className={cn("rounded-2xl shadow-premium", className)}>
+      <Card className={cn("shadow-sm", className)}>
         <CardHeader>
           <CardTitle className="text-base">No results</CardTitle>
           <CardDescription>Adjust filters and run search again.</CardDescription>
@@ -191,7 +191,7 @@ export function RankedMarketsPanel({
   if (variant === "panel") {
     return (
       <div className={cn("flex h-full min-h-0 flex-col overflow-hidden", className)}>
-        <div className="shrink-0 border-b border-border/50 bg-muted/15 px-2 py-2 text-[11px] font-medium text-muted-foreground dark:bg-muted/10">
+        <div className="shrink-0 border-b border-border/40 bg-muted/30 px-3 py-2 text-[11px] font-medium text-muted-foreground dark:border-border/35">
           {specialty} · {markets.length} market{markets.length === 1 ? "" : "s"}
         </div>
         <ScrollArea className="min-h-0 flex-1 overflow-hidden">
@@ -208,7 +208,7 @@ export function RankedMarketsPanel({
   return (
     <Card
       className={cn(
-        "flex min-h-[220px] flex-col overflow-hidden rounded-2xl shadow-premium lg:min-h-0 lg:flex-1",
+        "flex min-h-[220px] flex-col overflow-hidden rounded-lg border border-border/40 shadow-sm lg:min-h-0 lg:flex-1 dark:border-border/35",
         className
       )}
     >

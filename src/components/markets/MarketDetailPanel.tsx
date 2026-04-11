@@ -81,7 +81,7 @@ export function MarketDetailPanel({
   });
 
   const stackGap = embedded ? "gap-2" : "gap-3 lg:gap-4";
-  const cardRadius = embedded ? "rounded-xl" : "rounded-2xl";
+  const cardRadius = "rounded-lg";
 
   if (!regionId) {
     return (
@@ -103,7 +103,7 @@ export function MarketDetailPanel({
 
   if (detailQuery.isLoading) {
     return (
-      <Card className={cn("shadow-premium", cardRadius)}>
+      <Card className={cn("shadow-sm", cardRadius)}>
         <CardHeader className="space-y-0 py-3">
           <CardTitle className="text-sm font-semibold">Loading…</CardTitle>
         </CardHeader>
@@ -113,7 +113,7 @@ export function MarketDetailPanel({
 
   if (detailQuery.isError || !detailQuery.data) {
     return (
-      <Card className={cn("border-destructive/35 shadow-premium", cardRadius)}>
+      <Card className={cn("border-destructive/35 shadow-sm", cardRadius)}>
         <CardHeader className="space-y-0 py-3">
           <CardTitle className="text-sm font-semibold text-destructive">
             Could not load market
@@ -135,7 +135,7 @@ export function MarketDetailPanel({
 
   return (
     <div className={cn("flex flex-col", stackGap)}>
-      <Card className={cn("shadow-premium", cardRadius)}>
+      <Card className={cn("shadow-sm", cardRadius)}>
         <CardHeader
           className={cn(
             "space-y-2 border-b border-border/50 bg-muted/10 dark:bg-muted/5",
@@ -162,7 +162,7 @@ export function MarketDetailPanel({
         <CardContent className={cn("text-sm", contentPad)}>
           <div
             className={cn(
-              "grid grid-cols-2 gap-2.5 rounded-xl border border-border/50 bg-linear-to-br from-muted/50 to-muted/25 p-3 sm:grid-cols-3 dark:from-muted/30 dark:to-muted/10",
+              "grid grid-cols-2 gap-2.5 rounded-lg border border-border/40 bg-muted/35 p-3 sm:grid-cols-3 dark:border-border/35 dark:bg-muted/25",
               embedded && "gap-2 p-2.5"
             )}
           >
@@ -206,7 +206,7 @@ export function MarketDetailPanel({
               type="button"
               size="sm"
               variant="secondary"
-              className="rounded-xl"
+              className="rounded-lg"
               onClick={onCompare}
             >
               Compare
@@ -215,7 +215,7 @@ export function MarketDetailPanel({
               type="button"
               size="sm"
               variant="outline"
-              className="rounded-xl"
+              className="rounded-lg"
               onClick={() => {
                 onSave();
                 if (queryId) {
@@ -251,7 +251,7 @@ export function MarketDetailPanel({
         }
       />
 
-      <Card className={cn("shadow-premium", cardRadius)}>
+      <Card className={cn("shadow-sm", cardRadius)}>
         <CardHeader className="space-y-0 border-b border-border/50 bg-muted/10 py-2.5 dark:bg-muted/5 sm:py-3">
           <CardTitle className="text-sm font-semibold">Listings</CardTitle>
         </CardHeader>

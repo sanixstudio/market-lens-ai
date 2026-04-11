@@ -49,32 +49,33 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Light: cool slate canvas, indigo primary, crisp cards */
+/* Light: cool slate field, white surfaces, deep indigo accent (high contrast vs old near-white) */
 :root {
-  --background: oklch(0.978 0.012 264);
-  --foreground: oklch(0.17 0.028 264);
-  --card: oklch(0.998 0.004 264);
-  --card-foreground: oklch(0.17 0.028 264);
-  --popover: oklch(0.998 0.004 264);
-  --popover-foreground: oklch(0.17 0.028 264);
-  --primary: oklch(0.46 0.19 265);
-  --primary-foreground: oklch(0.99 0.005 264);
-  --secondary: oklch(0.94 0.025 265);
-  --secondary-foreground: oklch(0.3 0.1 265);
-  --muted: oklch(0.948 0.018 264);
-  --muted-foreground: oklch(0.45 0.04 264);
-  --accent: oklch(0.93 0.045 265);
-  --accent-foreground: oklch(0.32 0.14 265);
-  --destructive: oklch(0.55 0.22 25);
-  --border: oklch(0.9 0.02 264);
-  --input: oklch(0.9 0.02 264);
-  --ring: oklch(0.52 0.17 265);
-  --chart-1: oklch(0.58 0.18 265);
-  --chart-2: oklch(0.62 0.14 200);
-  --chart-3: oklch(0.55 0.12 160);
-  --chart-4: oklch(0.68 0.16 290);
-  --chart-5: oklch(0.5 0.08 264);
-  --radius: 0.75rem;
+  --background: oklch(0.928 0.024 265);
+  --foreground: oklch(0.2 0.04 265);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.2 0.04 265);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.2 0.04 265);
+  --primary: oklch(0.42 0.24 268);
+  --primary-foreground: oklch(0.99 0.004 264);
+  --secondary: oklch(0.94 0.035 268);
+  --secondary-foreground: oklch(0.26 0.14 268);
+  --muted: oklch(0.94 0.02 265);
+  --muted-foreground: oklch(0.42 0.045 265);
+  --accent: oklch(0.92 0.055 268);
+  --accent-foreground: oklch(0.28 0.16 268);
+  --destructive: oklch(0.52 0.22 25);
+  --border: oklch(0.88 0.02 265);
+  --input: oklch(0.88 0.02 265);
+  --ring: oklch(0.48 0.22 268);
+  --chart-1: oklch(0.56 0.2 268);
+  --chart-2: oklch(0.6 0.14 200);
+  --chart-3: oklch(0.54 0.12 160);
+  --chart-4: oklch(0.65 0.18 290);
+  --chart-5: oklch(0.48 0.08 264);
+  /* ~8px base: one radius family for controls + cards (Linear / Stripe-style) */
+  --radius: 0.5rem;
   --sidebar: oklch(0.985 0.01 264);
   --sidebar-foreground: oklch(0.17 0.028 264);
   --sidebar-primary: oklch(0.46 0.19 265);
@@ -85,31 +86,31 @@
   --sidebar-ring: oklch(0.52 0.17 265);
 }
 
-/* Dark: deep ink with luminous indigo accents */
+/* Dark: ink-navy depth, luminous violet accent */
 .dark {
-  --background: oklch(0.13 0.028 264);
-  --foreground: oklch(0.97 0.01 264);
-  --card: oklch(0.18 0.035 264);
-  --card-foreground: oklch(0.97 0.01 264);
-  --popover: oklch(0.18 0.035 264);
-  --popover-foreground: oklch(0.97 0.01 264);
-  --primary: oklch(0.72 0.16 265);
-  --primary-foreground: oklch(0.14 0.04 265);
-  --secondary: oklch(0.24 0.04 264);
-  --secondary-foreground: oklch(0.94 0.02 264);
-  --muted: oklch(0.22 0.035 264);
-  --muted-foreground: oklch(0.68 0.04 264);
-  --accent: oklch(0.26 0.06 265);
-  --accent-foreground: oklch(0.92 0.06 265);
-  --destructive: oklch(0.65 0.2 22);
-  --border: oklch(0.28 0.04 264);
-  --input: oklch(0.26 0.04 264);
-  --ring: oklch(0.62 0.15 265);
-  --chart-1: oklch(0.72 0.16 265);
-  --chart-2: oklch(0.65 0.12 200);
-  --chart-3: oklch(0.7 0.14 160);
-  --chart-4: oklch(0.68 0.18 290);
-  --chart-5: oklch(0.55 0.08 264);
+  --background: oklch(0.12 0.032 264);
+  --foreground: oklch(0.97 0.008 264);
+  --card: oklch(0.165 0.038 264);
+  --card-foreground: oklch(0.97 0.008 264);
+  --popover: oklch(0.175 0.04 264);
+  --popover-foreground: oklch(0.97 0.008 264);
+  --primary: oklch(0.74 0.17 268);
+  --primary-foreground: oklch(0.13 0.045 268);
+  --secondary: oklch(0.22 0.038 264);
+  --secondary-foreground: oklch(0.93 0.02 264);
+  --muted: oklch(0.21 0.036 264);
+  --muted-foreground: oklch(0.66 0.04 264);
+  --accent: oklch(0.25 0.055 268);
+  --accent-foreground: oklch(0.92 0.06 268);
+  --destructive: oklch(0.63 0.2 22);
+  --border: oklch(0.3 0.04 264);
+  --input: oklch(0.3 0.04 264);
+  --ring: oklch(0.65 0.16 268);
+  --chart-1: oklch(0.72 0.17 268);
+  --chart-2: oklch(0.64 0.12 200);
+  --chart-3: oklch(0.68 0.14 160);
+  --chart-4: oklch(0.66 0.18 290);
+  --chart-5: oklch(0.52 0.08 264);
   --sidebar: oklch(0.16 0.03 264);
   --sidebar-foreground: oklch(0.97 0.01 264);
   --sidebar-primary: oklch(0.72 0.16 265);
@@ -135,33 +136,43 @@
 @layer utilities {
   .mesh-page {
     background-color: var(--background);
-    background-image:
-      radial-gradient(ellipse 120% 80% at 0% -20%, oklch(0.72 0.14 265 / 18%), transparent),
-      radial-gradient(ellipse 90% 60% at 100% 0%, oklch(0.65 0.12 200 / 12%), transparent),
-      radial-gradient(ellipse 70% 50% at 80% 100%, oklch(0.7 0.1 290 / 10%), transparent);
+    background-image: radial-gradient(
+      ellipse 120% 80% at 50% -30%,
+      oklch(0.62 0.14 268 / 12%),
+      transparent 55%
+    );
   }
   .dark .mesh-page {
-    background-image:
-      radial-gradient(ellipse 100% 70% at 10% 0%, oklch(0.42 0.18 265 / 35%), transparent),
-      radial-gradient(ellipse 80% 50% at 100% 20%, oklch(0.35 0.12 200 / 15%), transparent),
-      radial-gradient(ellipse 60% 40% at 70% 100%, oklch(0.4 0.15 290 / 12%), transparent);
+    background-image: radial-gradient(
+      ellipse 100% 70% at 50% -20%,
+      oklch(0.35 0.16 268 / 35%),
+      transparent 50%
+    );
   }
 
   .shadow-premium {
     box-shadow:
       0 1px 2px oklch(0 0 0 / 4%),
-      0 10px 28px -6px oklch(0.42 0.14 265 / 13%),
-      inset 0 1px 0 oklch(1 0 0 / 45%);
+      0 8px 24px -6px oklch(0 0 0 / 8%);
   }
   .dark .shadow-premium {
     box-shadow:
-      0 1px 2px oklch(0 0 0 / 25%),
-      0 12px 36px -8px oklch(0.55 0.12 265 / 22%),
-      inset 0 1px 0 oklch(1 0 0 / 6%);
+      0 1px 2px oklch(0 0 0 / 20%),
+      0 12px 28px -8px oklch(0 0 0 / 45%);
   }
 
   .text-gradient-brand {
-    @apply bg-gradient-to-br from-primary via-primary to-[oklch(0.52_0.2_285)] bg-clip-text text-transparent dark:from-[oklch(0.78_0.14_265)] dark:via-primary dark:to-[oklch(0.72_0.12_290)];
+    @apply bg-gradient-to-br from-[oklch(0.42_0.24_268)] via-primary to-[oklch(0.52_0.22_290)] bg-clip-text text-transparent dark:from-[oklch(0.82_0.14_268)] dark:via-[oklch(0.76_0.16_275)] dark:to-[oklch(0.72_0.14_300)];
+  }
+
+  /** Filter strip */
+  .filter-well {
+    @apply border-b border-border/55 bg-card/95 shadow-sm backdrop-blur-md dark:border-border/50 dark:bg-card/90 dark:shadow-md dark:shadow-black/20;
+  }
+
+  /** Primary panels in the explorer grid (pair with `.shadow-premium` in markup) */
+  .panel-elevated {
+    @apply rounded-lg border border-border/40 bg-card dark:border-border/40 dark:bg-card;
   }
 
   .chrome-glass {

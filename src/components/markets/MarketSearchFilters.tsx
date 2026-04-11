@@ -61,9 +61,9 @@ export function MarketSearchFilters({
   }, [advancedOpen]);
 
   return (
-    <div className="shrink-0 border-b border-border/50 bg-muted/25 dark:bg-muted/15">
-      <div className="mx-auto max-w-[1600px] px-3 py-2 sm:px-4">
-        <div className="flex flex-wrap items-end gap-2 sm:gap-2.5">
+    <div className="filter-well shrink-0">
+      <div className="mx-auto max-w-[1600px] px-3 py-2.5 sm:px-4 sm:py-3">
+        <div className="flex flex-wrap items-end gap-2 sm:gap-3">
           <div className="w-[min(100%,11rem)] shrink-0 sm:w-44">
             <Label htmlFor="specialty" className="sr-only">
               Role
@@ -76,7 +76,7 @@ export function MarketSearchFilters({
             >
               <SelectTrigger
                 id="specialty"
-                className="h-8 w-full rounded-lg border-border/70 bg-card text-xs sm:h-9 sm:text-sm"
+                className="h-9 w-full border-border/70 bg-card/90 text-xs sm:text-sm dark:bg-card/60"
               >
                 <SelectValue placeholder="Role" />
               </SelectTrigger>
@@ -101,7 +101,7 @@ export function MarketSearchFilters({
               step={5000}
               placeholder="Min $/yr"
               title="Minimum annual salary (USD)"
-              className="h-8 rounded-lg border-border/70 bg-card px-2 text-xs sm:h-9 sm:px-2.5 sm:text-sm"
+              className="border-border/70 bg-card/90 px-2.5 text-xs sm:px-3 sm:text-sm dark:bg-card/60"
               value={values.minPay}
               onChange={(e) => onChange({ ...values, minPay: e.target.value })}
             />
@@ -115,7 +115,7 @@ export function MarketSearchFilters({
               id="states"
               placeholder="States e.g. CA,TX"
               title="Comma-separated state codes"
-              className="h-8 rounded-lg border-border/70 bg-card px-2 text-xs sm:h-9 sm:text-sm"
+              className="border-border/70 bg-card/90 px-2.5 text-xs sm:px-3 sm:text-sm dark:bg-card/60"
               value={values.states}
               onChange={(e) => onChange({ ...values, states: e.target.value })}
             />
@@ -128,8 +128,8 @@ export function MarketSearchFilters({
               size="sm"
               aria-expanded={advancedOpen}
               className={cn(
-                "h-8 gap-1 rounded-lg px-2.5 text-xs sm:h-9",
-                advancedOpen && "border-primary/40 bg-primary/5"
+                "h-9 gap-1 px-3 text-xs",
+                advancedOpen && "border-primary/35 bg-primary/[0.07] shadow-sm dark:bg-primary/10"
               )}
               onClick={() => setAdvancedOpen((o) => !o)}
             >
@@ -141,7 +141,7 @@ export function MarketSearchFilters({
             </Button>
             {advancedOpen ? (
               <div
-                className="absolute right-0 top-full z-30 mt-1 flex w-[min(100vw-1.5rem,18rem)] flex-col gap-2.5 rounded-xl border border-border/70 bg-card p-3 shadow-lg dark:shadow-black/40"
+                className="absolute right-0 top-full z-[120] mt-1.5 flex w-[min(100vw-1.5rem,18rem)] flex-col gap-3 rounded-lg border border-border/50 bg-popover p-3 shadow-md ring-1 ring-black/[0.04] dark:border-border/45 dark:bg-popover dark:ring-white/[0.06]"
                 role="region"
                 aria-label="Advanced filters"
               >
@@ -155,7 +155,7 @@ export function MarketSearchFilters({
                     min={1}
                     max={90}
                     placeholder="Any"
-                    className="h-8 rounded-lg text-sm"
+                    className="text-sm"
                     value={values.freshnessDays}
                     onChange={(e) => onChange({ ...values, freshnessDays: e.target.value })}
                   />
@@ -172,7 +172,7 @@ export function MarketSearchFilters({
                       });
                     }}
                   >
-                    <SelectTrigger className="h-8 rounded-lg text-sm">
+                    <SelectTrigger className="text-sm" size="sm">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -190,7 +190,7 @@ export function MarketSearchFilters({
             <Button
               type="button"
               size="sm"
-              className="h-8 rounded-lg px-4 sm:h-9"
+              className="px-5"
               onClick={onSubmit}
               disabled={isSearching}
             >
@@ -200,7 +200,7 @@ export function MarketSearchFilters({
               type="button"
               variant="ghost"
               size="sm"
-              className="h-8 px-2 text-xs text-muted-foreground sm:h-9"
+              className="px-2.5 text-xs text-muted-foreground hover:text-foreground"
               onClick={onReset}
             >
               Reset

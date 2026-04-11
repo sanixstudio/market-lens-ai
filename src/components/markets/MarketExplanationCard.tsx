@@ -24,11 +24,11 @@ export function MarketExplanationCard({
   onFeedback,
   embedded = false,
 }: Props) {
-  const cardRadius = embedded ? "rounded-xl" : "rounded-2xl";
+  const cardRadius = "rounded-lg";
 
   if (isLoading) {
     return (
-      <Card className={cn("shadow-premium", cardRadius)}>
+      <Card className={cn("shadow-sm", cardRadius)}>
         <CardHeader className="space-y-0 border-b border-border/50 bg-muted/10 py-2.5 dark:bg-muted/5">
           <CardTitle className="text-sm font-semibold">AI insight</CardTitle>
         </CardHeader>
@@ -42,7 +42,7 @@ export function MarketExplanationCard({
   }
 
   return (
-    <Card className={cn("shadow-premium", cardRadius)}>
+    <Card className={cn("shadow-sm", cardRadius)}>
       <CardHeader className="space-y-0 border-b border-border/50 bg-muted/10 py-2.5 dark:bg-muted/5 sm:py-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <CardTitle className="text-sm font-semibold">AI insight</CardTitle>
@@ -103,7 +103,7 @@ export function MarketExplanationCard({
               type="button"
               size="sm"
               variant="secondary"
-              className="rounded-xl"
+              className="rounded-lg"
               onClick={() => onFeedback(true)}
             >
               Helpful
@@ -112,7 +112,7 @@ export function MarketExplanationCard({
               type="button"
               size="sm"
               variant="outline"
-              className="rounded-xl"
+              className="rounded-lg"
               onClick={() => onFeedback(false)}
             >
               Not helpful

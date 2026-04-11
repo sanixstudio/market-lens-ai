@@ -183,7 +183,7 @@ export function OpportunityMap({ markets, selectedId, onSelect }: Props) {
   }
 
   return (
-    <div className="relative h-full min-h-0 w-full overflow-hidden rounded-b-xl bg-linear-to-br from-muted/30 via-muted/15 to-transparent">
+    <div className="relative z-0 isolate h-full min-h-0 w-full overflow-hidden rounded-b-lg bg-muted/25 dark:bg-muted/15">
       <Map
         ref={mapRef}
         mapboxAccessToken={mapboxAccessToken}
@@ -216,20 +216,20 @@ export function OpportunityMap({ markets, selectedId, onSelect }: Props) {
               <button
                 type="button"
                 title={m.regionName}
-                className={`h-4 w-4 rounded-full border-2 border-white shadow-md ring-2 ring-black/10 transition-transform hover:scale-125 ${scoreColor(
+                className={`h-[0.95rem] w-[0.95rem] rounded-full border border-white shadow-md ring-1 ring-black/15 transition-transform hover:scale-[1.2] sm:h-4 sm:w-4 ${scoreColor(
                   m.opportunityScore
-                )} ${selected ? "ring-primary scale-125 ring-2" : ""}`}
+                )} ${selected ? "scale-125 ring-2 ring-primary/90 shadow-lg" : ""}`}
               />
             </Marker>
           );
         })}
       </Map>
       <div
-        className="pointer-events-none absolute bottom-3 left-3 z-10 max-w-40 rounded-xl border border-border/60 bg-card/90 px-3 py-2.5 text-[10px] leading-tight shadow-lg shadow-black/5 backdrop-blur-md dark:shadow-black/30"
+        className="pointer-events-none absolute bottom-3 left-3 z-20 max-w-40 rounded-lg border border-border/40 bg-card px-3 py-2 text-[10px] leading-tight shadow-sm dark:border-border/40"
         aria-hidden
       >
-        <p className="mb-2 font-heading text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-          Opportunity
+        <p className="mb-2 font-heading text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+          Score
         </p>
         <ul className="space-y-1 text-muted-foreground">
           <li className="flex items-center gap-1.5">
