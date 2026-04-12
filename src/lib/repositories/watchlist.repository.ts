@@ -14,7 +14,8 @@ function isPostgresUniqueViolation(e: unknown): boolean {
   );
 }
 
-export async function listWatchlistForAnon(db: Db, anonKey: string) {
+/** Saved markets for the signed-in Clerk user. */
+export async function listWatchlistForClerkUser(db: Db, clerkUserId: string) {
   return db
     .select({
       regionId: schema.watchlistItems.regionId,
@@ -26,24 +27,25 @@ export async function listWatchlistForAnon(db: Db, anonKey: string) {
       schema.marketRegions,
       eq(schema.watchlistItems.regionId, schema.marketRegions.id)
     )
-    .where(eq(schema.watchlistItems.anonKey, anonKey))
+    .where(eq(schema.watchlistItems.clerkUserId, clerkUserId))
     .orderBy(desc(schema.watchlistItems.createdAt));
 }
 
-export async function addWatchlistItem(
+export async function addWatchlistItemForClerkUser(
   db: Db,
-  input: { id: string; anonKey: string; regionId: string }
+  input: { id: string; clerkUserId: string; regionId: string }
 ): Promise<void> {
   try {
     await db
       .insert(schema.watchlistItems)
       .values({
         id: input.id,
-        anonKey: input.anonKey,
+        clerkUserId: input.clerkUserId,
+        anonKey: null,
         regionId: input.regionId,
       })
       .onConflictDoNothing({
-        target: [schema.watchlistItems.anonKey, schema.watchlistItems.regionId],
+        target: [schema.watchlistItems.clerkUserId, schema.watchlistItems.regionId],
       });
     return;
   } catch (e: unknown) {
@@ -57,7 +59,7 @@ export async function addWatchlistItem(
     .from(schema.watchlistItems)
     .where(
       and(
-        eq(schema.watchlistItems.anonKey, input.anonKey),
+        eq(schema.watchlistItems.clerkUserId, input.clerkUserId),
         eq(schema.watchlistItems.regionId, input.regionId)
       )
     )
@@ -70,7 +72,8 @@ export async function addWatchlistItem(
   try {
     await db.insert(schema.watchlistItems).values({
       id: input.id,
-      anonKey: input.anonKey,
+      clerkUserId: input.clerkUserId,
+      anonKey: null,
       regionId: input.regionId,
     });
   } catch (e: unknown) {
@@ -81,16 +84,16 @@ export async function addWatchlistItem(
   }
 }
 
-export async function removeWatchlistItem(
+export async function removeWatchlistItemForClerkUser(
   db: Db,
-  anonKey: string,
+  clerkUserId: string,
   regionId: string
 ): Promise<void> {
   await db
     .delete(schema.watchlistItems)
     .where(
       and(
-        eq(schema.watchlistItems.anonKey, anonKey),
+        eq(schema.watchlistItems.clerkUserId, clerkUserId),
         eq(schema.watchlistItems.regionId, regionId)
       )
     );

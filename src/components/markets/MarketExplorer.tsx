@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useOpenSignInModal } from "@/components/auth/sign-in-modal-context";
 import { useWatchlist } from "@/hooks/use-watchlist";
 import { buildExploreSearchParams, parseExploreUrl } from "@/lib/explore-url";
 import type { SearchMarketsResponse } from "@/lib/schemas/market";
@@ -85,10 +86,12 @@ export function MarketExplorer() {
   const [rightTab, setRightTab] = useState<RightTab>("rankings");
   const [watchlistOpen, setWatchlistOpen] = useState(false);
 
+  const openSignInModal = useOpenSignInModal();
   const {
     items: watchlistItems,
     isLoading: watchlistLoading,
     watchlistBusy,
+    isSignedInWatchlist,
     isWatchlisted,
     add: addWatchlist,
     remove: removeWatchlist,
@@ -176,6 +179,13 @@ export function MarketExplorer() {
 
   const handleWatchlistToggle = useCallback(async () => {
     if (!selectedId) return;
+    if (!isSignedInWatchlist) {
+      toast.info("Sign in to save markets", {
+        description: "Your saved list is tied to your account.",
+      });
+      openSignInModal();
+      return;
+    }
     const saved = watchlistItems.some((i) => i.regionId === selectedId);
     try {
       if (saved) {
@@ -189,11 +199,35 @@ export function MarketExplorer() {
         postMarketSavedFeedback(queryId, selectedId);
       }
     } catch (e) {
+      if (e instanceof Error && e.message === "SIGN_IN_REQUIRED") {
+        toast.info("Sign in to save markets");
+        openSignInModal();
+        return;
+      }
       toast.error("Couldn’t update saved markets", {
         description: e instanceof Error ? e.message : "Try again in a moment.",
       });
     }
-  }, [selectedId, queryId, addWatchlist, removeWatchlist, watchlistItems]);
+  }, [
+    selectedId,
+    queryId,
+    addWatchlist,
+    removeWatchlist,
+    watchlistItems,
+    isSignedInWatchlist,
+    openSignInModal,
+  ]);
+
+  const openSavedMarkets = useCallback(() => {
+    if (!isSignedInWatchlist) {
+      toast.info("Sign in to view saved markets", {
+        description: "Saved regions are stored on your account.",
+      });
+      openSignInModal();
+      return;
+    }
+    setWatchlistOpen(true);
+  }, [isSignedInWatchlist, openSignInModal]);
 
   const selectedMarket = useMemo(
     () => markets.find((m) => m.regionId === selectedId) ?? null,
@@ -223,7 +257,7 @@ export function MarketExplorer() {
             <>
               <WatchlistOpenButton
                 count={watchlistItems.length}
-                onClick={() => setWatchlistOpen(true)}
+                onClick={openSavedMarkets}
               />
               <ShareViewButton sharePath={sharePath} />
             </>
@@ -254,6 +288,10 @@ export function MarketExplorer() {
               await removeWatchlist(id);
               toast.success("Removed from saved");
             } catch (e) {
+              if (e instanceof Error && e.message === "SIGN_IN_REQUIRED") {
+                openSignInModal();
+                return;
+              }
               toast.error("Couldn’t remove", {
                 description: e instanceof Error ? e.message : "Try again.",
               });

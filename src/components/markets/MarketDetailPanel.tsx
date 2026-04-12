@@ -24,7 +24,7 @@ type Props = {
   specialty: string;
   queryId: string | null;
   onCompare: () => void;
-  /** Server-backed watchlist (anonymous session). */
+  /** Clerk-backed saved list (signed-in users only). */
   watchlisted: boolean;
   watchlistBusy?: boolean;
   onToggleWatchlist: () => void | Promise<void>;

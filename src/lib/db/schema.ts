@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import {
   boolean,
   doublePrecision,
@@ -117,20 +118,28 @@ export const feedbackEvents = pgTable("feedback_events", {
 });
 
 /**
- * Saved markets for anonymous (or future authenticated) users.
- * Client sends `X-MarketLens-Anon: <uuid>` on watchlist routes.
+ * Saved markets: either legacy anonymous (`anon_key`) or signed-in Clerk user (`clerk_user_id`).
+ * Enforced in DB: exactly one owner column is set (see migration `watchlist_items_owner_oneof`).
  */
 export const watchlistItems = pgTable(
   "watchlist_items",
   {
     id: text("id").primaryKey(),
-    anonKey: text("anon_key").notNull(),
+    anonKey: text("anon_key"),
+    clerkUserId: text("clerk_user_id"),
     regionId: text("region_id")
       .notNull()
       .references(() => marketRegions.id, { onDelete: "cascade" }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [uniqueIndex("watchlist_items_anon_region_unique").on(t.anonKey, t.regionId)]
+  (t) => [
+    uniqueIndex("watchlist_items_anon_region_unique")
+      .on(t.anonKey, t.regionId)
+      .where(sql`${t.anonKey} IS NOT NULL`),
+    uniqueIndex("watchlist_items_clerk_region_unique")
+      .on(t.clerkUserId, t.regionId)
+      .where(sql`${t.clerkUserId} IS NOT NULL`),
+  ]
 );
 
 export type JobRow = typeof jobs.$inferSelect;

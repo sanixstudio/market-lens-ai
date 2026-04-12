@@ -30,7 +30,7 @@ export function WatchlistSheet({
         <SheetHeader className="border-b border-border/50 px-4 py-4 text-left">
           <SheetTitle className="font-heading text-base">Saved markets</SheetTitle>
           <p className="text-xs font-normal text-muted-foreground">
-            Stored for this browser session. Sign-in can merge these later.
+            Tied to your signed-in account. Sign in from the header to save or view this list.
           </p>
         </SheetHeader>
         <ScrollArea className="min-h-0 flex-1">
