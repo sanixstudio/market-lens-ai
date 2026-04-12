@@ -56,6 +56,13 @@
     tooltips --z-tooltip, sheet backdrop 400, sheet 410.
   */
   --z-tooltip: 380;
+  /*
+    Opportunity “heat” (info scale): cool slate → blue → cyan/teal.
+    Same ramp in light & dark so map markers stay legible on Mapbox light basemap.
+  */
+  --opportunity-heat-low: oklch(0.76 0.055 252);
+  --opportunity-heat-mid: oklch(0.62 0.13 242);
+  --opportunity-heat-high: oklch(0.51 0.165 218);
   --background: oklch(0.965 0.006 264);
   --foreground: oklch(0.17 0.028 264);
   --card: oklch(1 0 0);
@@ -219,5 +226,44 @@
       oklch(0.65 0.14 200 / 60%),
       oklch(0.72 0.16 265 / 0%)
     );
+  }
+
+  /** Map markers: solid info-heat fill */
+  .heat-marker--low {
+    background-color: var(--opportunity-heat-low);
+  }
+  .heat-marker--mid {
+    background-color: var(--opportunity-heat-mid);
+  }
+  .heat-marker--high {
+    background-color: var(--opportunity-heat-high);
+  }
+
+  /**
+   * Ranked list score pills: tinted chip + readable text (theme-aware).
+   */
+  .heat-pill--low {
+    background-color: color-mix(in oklab, var(--opportunity-heat-low) 28%, var(--card));
+    color: oklch(0.32 0.06 265);
+  }
+  .heat-pill--mid {
+    background-color: color-mix(in oklab, var(--opportunity-heat-mid) 26%, var(--card));
+    color: oklch(0.3 0.12 248);
+  }
+  .heat-pill--high {
+    background-color: color-mix(in oklab, var(--opportunity-heat-high) 24%, var(--card));
+    color: oklch(0.28 0.14 230);
+  }
+  .dark .heat-pill--low {
+    background-color: color-mix(in oklab, var(--opportunity-heat-low) 42%, var(--card));
+    color: oklch(0.88 0.04 260);
+  }
+  .dark .heat-pill--mid {
+    background-color: color-mix(in oklab, var(--opportunity-heat-mid) 38%, var(--card));
+    color: oklch(0.86 0.08 235);
+  }
+  .dark .heat-pill--high {
+    background-color: color-mix(in oklab, var(--opportunity-heat-high) 36%, var(--card));
+    color: oklch(0.9 0.09 215);
   }
 }

@@ -14,6 +14,7 @@ import { formatScore, formatTechPay } from "@/lib/formatters";
 import type { MarketDetailResponse } from "@/lib/schemas/market";
 import type { ExplainMarketResponse } from "@/lib/schemas/ai-insight";
 import { InfoTip } from "@/components/ui/info-tip";
+import { heatPillClass, opportunityHeatBand } from "@/lib/opportunity-heat";
 import { cn } from "@/lib/utils";
 import { ConfidenceBadge } from "./ConfidenceBadge";
 import { MarketExplanationCard } from "./MarketExplanationCard";
@@ -140,6 +141,7 @@ export function MarketDetailPanel({
   }
 
   const d = detailQuery.data;
+  const opportunityHeat = opportunityHeatBand(d.metrics.opportunityScore);
   const lowConfidence = d.metrics.confidenceScore < 0.45;
   const hasRemotiveSamples = d.sampleJobs.some((j) =>
     j.listingUrl?.includes("remotive.com")
@@ -165,10 +167,16 @@ export function MarketDetailPanel({
               <CardTitle className="mt-1 text-lg font-semibold leading-tight tracking-tight">
                 {d.regionName}
               </CardTitle>
-              <CardDescription className="mt-1 text-sm">
-                {d.specialty}
-                <span className="mx-1.5 text-muted-foreground/40">·</span>
-                Score {formatScore(d.metrics.opportunityScore)}
+              <CardDescription className="mt-1 flex flex-wrap items-center gap-2 text-sm">
+                <span>{d.specialty}</span>
+                <span
+                  className={cn(
+                    "rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums",
+                    heatPillClass[opportunityHeat]
+                  )}
+                >
+                  Score {formatScore(d.metrics.opportunityScore)}
+                </span>
               </CardDescription>
             </div>
             <ConfidenceBadge score={d.metrics.confidenceScore} />

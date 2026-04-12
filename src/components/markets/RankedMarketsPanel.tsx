@@ -12,6 +12,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatScore, formatTechPay } from "@/lib/formatters";
 import type { SearchMarketsResponse } from "@/lib/schemas/market";
+import { heatPillClass, opportunityHeatBand } from "@/lib/opportunity-heat";
 import { InfoTip } from "@/components/ui/info-tip";
 import { cn } from "@/lib/utils";
 import { ConfidenceBadge } from "./ConfidenceBadge";
@@ -83,7 +84,9 @@ export function RankedMarketsPanel({
   className,
   variant = "card",
 }: Props) {
-  const renderCard = (m: MarketItem, opts?: { hidden?: boolean }) => (
+  const renderCard = (m: MarketItem, opts?: { hidden?: boolean }) => {
+    const heat = opportunityHeatBand(m.opportunityScore);
+    return (
     <button
       key={opts?.hidden ? `hidden-${m.regionId}` : m.regionId}
       type="button"
@@ -110,7 +113,12 @@ export function RankedMarketsPanel({
           <p className="font-heading text-[0.9375rem] font-semibold leading-snug text-foreground">
             {m.regionName}
           </p>
-          <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-0.5 font-mono text-[11px] font-semibold tabular-nums text-primary dark:bg-primary/20">
+          <span
+            className={cn(
+              "shrink-0 rounded-full px-2.5 py-0.5 font-mono text-[11px] font-semibold tabular-nums",
+              heatPillClass[heat]
+            )}
+          >
             {formatScore(m.opportunityScore)}
           </span>
         </div>
@@ -134,7 +142,8 @@ export function RankedMarketsPanel({
         </ul>
       </div>
     </button>
-  );
+    );
+  };
 
   if (isLoading) {
     if (variant === "panel") {

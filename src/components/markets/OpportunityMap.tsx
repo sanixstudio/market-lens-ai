@@ -22,6 +22,8 @@ import Map, {
 } from "react-map-gl/mapbox";
 import type { LngLatBoundsLike, Map as MapboxMap, MapEvent } from "mapbox-gl";
 import { InfoTip } from "@/components/ui/info-tip";
+import { heatMarkerClass, opportunityHeatBand } from "@/lib/opportunity-heat";
+import { cn } from "@/lib/utils";
 
 const MAP_STYLE = "mapbox://styles/mapbox/light-v11";
 
@@ -140,12 +142,6 @@ export function OpportunityMap({ markets, selectedId, onSelect }: Props) {
     [markets]
   );
 
-  const scoreColor = useCallback((s: number) => {
-    if (s >= 0.72) return "bg-emerald-600";
-    if (s >= 0.55) return "bg-amber-500";
-    return "bg-slate-400";
-  }, []);
-
   const handleLoad = useCallback((e: MapEvent) => {
     const map = e.target;
     map.scrollZoom.setWheelZoomRate(1 / 600);
@@ -217,9 +213,11 @@ export function OpportunityMap({ markets, selectedId, onSelect }: Props) {
               <button
                 type="button"
                 title={m.regionName}
-                className={`h-[0.95rem] w-[0.95rem] rounded-full border border-white shadow-md ring-1 ring-black/15 transition-transform hover:scale-[1.2] sm:h-4 sm:w-4 ${scoreColor(
-                  m.opportunityScore
-                )} ${selected ? "scale-125 ring-2 ring-primary/90 shadow-lg" : ""}`}
+                className={cn(
+                  "h-[0.95rem] w-[0.95rem] rounded-full border border-white shadow-md ring-1 ring-black/15 transition-transform hover:scale-[1.2] sm:h-4 sm:w-4",
+                  heatMarkerClass[opportunityHeatBand(m.opportunityScore)],
+                  selected && "scale-125 ring-2 ring-primary/90 shadow-lg"
+                )}
               />
             </Marker>
           );
@@ -229,30 +227,40 @@ export function OpportunityMap({ markets, selectedId, onSelect }: Props) {
         <div className="pointer-events-auto max-w-[12rem] rounded-xl border border-border/50 bg-card/95 px-3 py-2.5 text-[10px] leading-tight shadow-premium backdrop-blur-sm dark:border-border/45">
           <div className="mb-2 flex items-center justify-between gap-1">
             <p className="font-heading text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-              Score
+              Heat
             </p>
             <InfoTip
-              label="Markers vs job posts"
+              label="Opportunity heat scale"
               side="top"
               align="end"
               className="size-6 text-muted-foreground"
             >
-              Every marker is one <span className="font-medium text-background">labor market</span>,
-              not an individual role. Colors map to opportunity score for your current search.
+              Markers use an <span className="font-medium text-background">info-style heat</span>{" "}
+              (cooler blues → stronger cyan/teal), not good/bad traffic lights. Each dot is one labor
+              market; color is relative opportunity for your current search—not job-post count.
             </InfoTip>
           </div>
-          <ul className="space-y-1 text-muted-foreground" aria-label="Opportunity score legend">
+          <ul className="space-y-1 text-muted-foreground" aria-label="Opportunity heat legend">
             <li className="flex items-center gap-1.5">
-              <span className="size-2.5 shrink-0 rounded-full bg-emerald-600 ring-1 ring-black/10" />
-              Strong
+              <span
+                className="heat-marker--high size-2.5 shrink-0 rounded-full ring-1 ring-black/12"
+                aria-hidden
+              />
+              Stronger
             </li>
             <li className="flex items-center gap-1.5">
-              <span className="size-2.5 shrink-0 rounded-full bg-amber-500 ring-1 ring-black/10" />
-              Medium
+              <span
+                className="heat-marker--mid size-2.5 shrink-0 rounded-full ring-1 ring-black/12"
+                aria-hidden
+              />
+              Moderate
             </li>
             <li className="flex items-center gap-1.5">
-              <span className="size-2.5 shrink-0 rounded-full bg-slate-400 ring-1 ring-black/10" />
-              Lower
+              <span
+                className="heat-marker--low size-2.5 shrink-0 rounded-full ring-1 ring-black/12"
+                aria-hidden
+              />
+              Cooler
             </li>
           </ul>
         </div>

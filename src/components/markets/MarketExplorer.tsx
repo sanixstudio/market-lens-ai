@@ -176,8 +176,9 @@ export function MarketExplorer() {
               </div>
               <InfoTip label="How to read the map" side="left" align="end" className="shrink-0">
                 Each dot is one <span className="font-medium text-background">labor market</span>{" "}
-                (metro or remote bucket), not one job post. Color encodes opportunity score for your
-                current filters—not posting volume.
+                (metro or remote bucket). Marker color is an{" "}
+                <span className="font-medium text-background">info heat</span> scale (blue → cyan) for
+                relative opportunity with your filters—not volume and not a red/amber alert.
               </InfoTip>
             </CardHeader>
             <CardContent className="relative z-0 min-h-0 flex-1 bg-muted/25 p-0 dark:bg-muted/15">
