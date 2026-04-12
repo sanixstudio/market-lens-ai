@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useWatchlist } from "@/hooks/use-watchlist";
 import { buildExploreSearchParams, parseExploreUrl } from "@/lib/explore-url";
 import type { SearchMarketsResponse } from "@/lib/schemas/market";
+import { ModeToggle } from "@/components/mode-toggle";
 import { cn } from "@/lib/utils";
 import { AppHeader } from "./AppHeader";
 import type { FilterValues } from "./MarketSearchFilters";
@@ -225,6 +226,7 @@ export function MarketExplorer() {
                 count={watchlistItems.length}
                 onClick={() => setWatchlistOpen(true)}
               />
+              <ModeToggle />
             </>
           }
         />
