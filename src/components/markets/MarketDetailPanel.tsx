@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { ExternalLink, MapPin } from "lucide-react";
+import { Check, ExternalLink, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -260,11 +260,18 @@ export function MarketDetailPanel({
               type="button"
               size="default"
               variant={watchlisted ? "secondary" : "outline"}
-              className="font-medium"
+              className="gap-2 font-medium"
               disabled={watchlistBusy}
               onClick={() => void onToggleWatchlist()}
             >
-              {watchlisted ? "Saved" : "Save for later"}
+              {watchlisted ? (
+                <>
+                  <Check className="size-4 shrink-0" strokeWidth={2.5} aria-hidden />
+                  Saved
+                </>
+              ) : (
+                "Save for later"
+              )}
             </Button>
           </div>
         </CardContent>
