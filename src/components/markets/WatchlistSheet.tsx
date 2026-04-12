@@ -92,7 +92,7 @@ export function WatchlistOpenButton({
       type="button"
       variant="outline"
       size="sm"
-      className="h-9 gap-1.5 border-border/60 px-3 text-xs font-medium shadow-sm sm:h-10 sm:text-sm"
+      className="h-9 gap-1.5 border-border/60 px-3 text-xs font-medium shadow-sm ring-1 ring-black/[0.03] sm:h-10 sm:text-sm dark:ring-white/[0.05]"
       aria-label={`Saved markets${count ? `, ${count} items` : ""}`}
       onClick={onClick}
     >

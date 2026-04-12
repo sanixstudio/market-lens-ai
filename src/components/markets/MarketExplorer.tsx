@@ -316,7 +316,7 @@ export function MarketExplorer() {
       </div>
 
       <main
-        className="relative z-0 mx-auto flex min-h-0 w-full max-w-[1760px] flex-1 flex-col gap-3 overflow-hidden px-4 pb-4 pt-3 sm:px-6 sm:pb-6 sm:pt-4 lg:gap-4"
+        className="relative z-0 mx-auto flex min-h-0 w-full max-w-[1760px] flex-1 flex-col gap-3.5 overflow-hidden px-4 pb-4 pt-3 sm:gap-4 sm:px-6 sm:pb-6 sm:pt-4 lg:gap-5"
         aria-describedby="explorer-flow-summary"
       >
         <p id="explorer-flow-summary" className="sr-only">
@@ -327,7 +327,7 @@ export function MarketExplorer() {
         {searchQuery.isError ? (
           <div
             role="alert"
-            className="shrink-0 rounded-xl border border-destructive/25 bg-destructive/5 px-4 py-3.5 text-sm shadow-sm"
+            className="shrink-0 rounded-2xl border border-destructive/30 bg-destructive/6 px-4 py-3.5 text-sm shadow-premium ring-1 ring-destructive/10"
           >
             <p className="font-heading text-sm font-semibold text-destructive">Search failed</p>
             <p className="mt-1.5 text-destructive/90">
@@ -342,7 +342,7 @@ export function MarketExplorer() {
 
         <div
           className={cn(
-            "grid min-h-0 flex-1 gap-3 overflow-hidden sm:gap-4",
+            "grid min-h-0 flex-1 gap-3.5 overflow-hidden sm:gap-4 lg:gap-5",
             "grid-cols-1 grid-rows-[minmax(220px,34vh)_minmax(0,1fr)]",
             "lg:grid-cols-[minmax(0,1fr)_minmax(300px,420px)] lg:grid-rows-1 lg:items-stretch"
           )}
@@ -362,7 +362,7 @@ export function MarketExplorer() {
                 relative opportunity with your filters—not volume and not a red/amber alert.
               </InfoTip>
             </CardHeader> */}
-            <CardContent className="relative z-0 min-h-0 flex-1 bg-muted/25 p-0 dark:bg-muted/15">
+            <CardContent className="relative z-0 min-h-0 flex-1 bg-linear-to-b from-muted/35 via-muted/20 to-muted/30 p-0 dark:from-muted/20 dark:via-muted/12 dark:to-muted/18">
               <OpportunityMap
                 markets={mapMarkets}
                 selectedId={selectedId}
@@ -372,12 +372,16 @@ export function MarketExplorer() {
           </Card>
 
           <div className="panel-elevated shadow-premium flex min-h-0 flex-col overflow-hidden p-0">
-            <div className="shrink-0 space-y-3 border-b border-border/50 px-4 pb-4 pt-4 dark:border-border/40">
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                  Insight
-                </p>
-                <p className="mt-1 text-sm font-medium text-foreground">Rankings & detail</p>
+            <div className="shrink-0 space-y-3.5 border-b border-border/45 bg-linear-to-b from-muted/35 to-transparent px-4 pb-4 pt-4 dark:border-border/40 dark:from-muted/25">
+              <div className="space-y-1">
+                <p className="insight-section-kicker">Insight</p>
+                <div className="flex items-end justify-between gap-2">
+                  <p className="insight-section-title">Rankings &amp; detail</p>
+                  <span
+                    className="hidden h-px min-w-8 max-w-18 flex-1 bg-linear-to-r from-primary/35 to-transparent sm:block"
+                    aria-hidden
+                  />
+                </div>
               </div>
               <div
                 className="segmented"

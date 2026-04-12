@@ -38,7 +38,7 @@ function HeaderAuth() {
     <SignInButton mode="modal">
       <button
         type="button"
-        className="h-9 rounded-lg border border-border/60 bg-background px-3 text-xs font-medium text-foreground shadow-sm transition-colors hover:bg-muted/80 sm:h-10 sm:text-sm dark:border-border/50"
+        className="h-9 rounded-lg border border-border/60 bg-background px-3 text-xs font-medium text-foreground shadow-sm ring-1 ring-black/[0.03] transition-colors hover:bg-muted/80 sm:h-10 sm:text-sm dark:border-border/50 dark:ring-white/[0.05]"
       >
         Sign in
       </button>
@@ -61,17 +61,17 @@ export function AppHeader({ primaryActions, utilityActions }: Props) {
       <div className="mx-auto flex min-h-14 w-full max-w-[1760px] items-center gap-4 px-4 py-3 sm:min-h-[3.75rem] sm:px-6">
         <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
           <div
-            className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 text-primary shadow-sm ring-1 ring-primary/10 dark:from-primary/25 dark:to-primary/10 dark:ring-primary/20 sm:size-11"
+            className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/18 via-primary/10 to-primary/5 text-primary shadow-premium ring-1 ring-primary/12 dark:from-primary/28 dark:via-primary/15 dark:to-primary/8 dark:ring-primary/25 sm:size-11"
             aria-hidden
           >
-            <Sparkles className="size-5 sm:size-[1.35rem]" strokeWidth={1.5} />
+            {/* <Sparkles className="size-5 sm:size-[1.35rem]" strokeWidth={1.5} /> */}
           </div>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
               <h1 className="font-heading text-lg font-semibold tracking-tight text-foreground sm:text-xl">
                 <span className="text-gradient-brand">MarketLens</span>
               </h1>
-              <span className="rounded-md border border-primary/15 bg-primary/8 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-primary dark:border-primary/25 dark:bg-primary/15">
+              <span className="rounded-md border border-primary/20 bg-gradient-to-b from-primary/10 to-primary/6 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-primary shadow-sm dark:border-primary/30 dark:from-primary/18 dark:to-primary/10">
                 AI
               </span>
               <InfoTip
@@ -87,7 +87,7 @@ export function AppHeader({ primaryActions, utilityActions }: Props) {
                 AI context.
               </InfoTip>
             </div>
-            <p className="mt-0.5 hidden text-xs text-muted-foreground sm:block">
+            <p className="mt-0.5 hidden text-xs font-medium tracking-wide text-muted-foreground/90 sm:block">
               Labor market intelligence for technology roles
             </p>
           </div>

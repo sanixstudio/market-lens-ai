@@ -63,8 +63,9 @@
   --opportunity-heat-low: oklch(0.76 0.055 252);
   --opportunity-heat-mid: oklch(0.62 0.13 242);
   --opportunity-heat-high: oklch(0.51 0.165 218);
-  --background: oklch(0.965 0.006 264);
-  --foreground: oklch(0.17 0.028 264);
+  /* Slightly cooler canvas — reads as “analyst workstation” without going cold */
+  --background: oklch(0.972 0.005 268);
+  --foreground: oklch(0.165 0.03 268);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.17 0.028 264);
   --popover: oklch(1 0 0);
@@ -149,30 +150,34 @@
   .mesh-page {
     background-color: var(--background);
     background-image:
-      radial-gradient(ellipse 100% 60% at 50% -25%, oklch(0.58 0.12 268 / 9%), transparent 52%),
-      radial-gradient(ellipse 80% 40% at 100% 0%, oklch(0.55 0.1 280 / 5%), transparent 45%);
+      radial-gradient(ellipse 120% 70% at 50% -30%, oklch(0.52 0.14 268 / 11%), transparent 55%),
+      radial-gradient(ellipse 90% 50% at 100% -5%, oklch(0.48 0.1 285 / 6%), transparent 48%),
+      radial-gradient(ellipse 60% 40% at 0% 100%, oklch(0.62 0.06 268 / 4%), transparent 50%);
   }
   .dark .mesh-page {
     background-image:
-      radial-gradient(ellipse 90% 55% at 50% -15%, oklch(0.32 0.14 268 / 28%), transparent 48%),
-      radial-gradient(ellipse 70% 35% at 100% 0%, oklch(0.28 0.12 290 / 18%), transparent 40%);
+      radial-gradient(ellipse 100% 58% at 50% -18%, oklch(0.34 0.15 268 / 32%), transparent 50%),
+      radial-gradient(ellipse 75% 38% at 100% 0%, oklch(0.3 0.12 290 / 22%), transparent 42%),
+      radial-gradient(ellipse 55% 35% at 0% 100%, oklch(0.25 0.08 268 / 25%), transparent 45%);
   }
 
   .shadow-premium {
     box-shadow:
-      0 1px 0 oklch(0 0 0 / 4%),
-      0 1px 2px oklch(0 0 0 / 5%),
-      0 12px 32px -8px oklch(0 0 0 / 10%);
+      0 1px 0 oklch(0 0 0 / 5%),
+      0 2px 4px oklch(0 0 0 / 4%),
+      0 16px 40px -10px oklch(0 0 0 / 12%),
+      0 0 0 1px oklch(0 0 0 / 3%);
   }
   .dark .shadow-premium {
     box-shadow:
-      0 1px 0 oklch(1 1 1 / 6%),
-      0 1px 2px oklch(0 0 0 / 25%),
-      0 16px 40px -12px oklch(0 0 0 / 55%);
+      0 1px 0 oklch(1 1 1 / 7%),
+      0 2px 6px oklch(0 0 0 / 35%),
+      0 20px 48px -14px oklch(0 0 0 / 58%),
+      0 0 0 1px oklch(1 1 1 / 5%);
   }
 
   .text-gradient-brand {
-    @apply bg-gradient-to-br from-[oklch(0.38_0.2_268)] via-primary to-[oklch(0.48_0.18_285)] bg-clip-text text-transparent dark:from-[oklch(0.78_0.14_268)] dark:via-[oklch(0.72_0.15_275)] dark:to-[oklch(0.68_0.12_295)];
+    @apply bg-gradient-to-br from-[oklch(0.36_0.21_268)] via-primary to-[oklch(0.5_0.17_286)] bg-clip-text text-transparent dark:from-[oklch(0.8_0.13_268)] dark:via-[oklch(0.74_0.14_275)] dark:to-[oklch(0.7_0.11_295)];
   }
 
   /** Product labels: form fields, table headers */
@@ -182,30 +187,38 @@
 
   /** Filter strip under app header */
   .filter-well {
-    @apply border-b border-border/60 bg-card/90 shadow-[0_1px_0_oklch(0_0_0/4%)] backdrop-blur-xl backdrop-saturate-150 dark:border-border/55 dark:bg-card/85 dark:shadow-[0_1px_0_oklch(1_1_1/6%)];
+    @apply border-b border-border/55 bg-gradient-to-b from-card/98 to-card/88 shadow-[0_1px_0_oklch(0_0_0/4%)] backdrop-blur-xl backdrop-saturate-150 dark:border-border/50 dark:from-card/92 dark:to-card/80 dark:shadow-[0_1px_0_oklch(1_1_1/5%)];
   }
 
   /** Explorer map / sidebar shells */
   .panel-elevated {
-    @apply rounded-xl border border-border/55 bg-card dark:border-border/50 dark:bg-card;
+    @apply rounded-2xl border border-border/50 bg-card ring-1 ring-black/[0.025] dark:border-border/45 dark:bg-card dark:ring-white/[0.04];
   }
 
   /** iOS-style segmented control for Markets / Details */
   .segmented {
-    @apply flex gap-0.5 rounded-[10px] bg-muted/80 p-1 dark:bg-muted/50;
+    @apply flex gap-0.5 rounded-xl border border-border/40 bg-muted/70 p-1 shadow-inner dark:border-border/35 dark:bg-muted/45;
   }
   .segmented-trigger {
-    @apply flex-1 rounded-lg py-2.5 text-sm font-medium text-muted-foreground transition-[color,background-color,box-shadow] duration-150 ease-out;
+    @apply flex-1 rounded-lg py-2.5 text-sm font-medium text-muted-foreground transition-[color,background-color,box-shadow,transform] duration-200 ease-out;
   }
   .segmented-trigger:hover[data-state="inactive"] {
     @apply text-foreground/90;
   }
   .segmented-trigger[data-state="active"] {
-    @apply bg-card text-foreground shadow-sm dark:bg-background dark:shadow-black/25;
+    @apply bg-card text-foreground shadow-md ring-1 ring-black/[0.04] dark:bg-background dark:shadow-black/30 dark:ring-white/[0.06];
   }
 
   .chrome-glass {
-    @apply border-b border-border/60 bg-card/80 shadow-[0_8px_32px_-8px_oklch(0_0_0/6%)] backdrop-blur-xl backdrop-saturate-150 dark:bg-card/75 dark:shadow-[0_12px_40px_-12px_oklch(0_0_0/35%)];
+    @apply border-b border-border/50 bg-gradient-to-b from-card/95 to-card/82 shadow-[0_12px_40px_-16px_oklch(0_0_0/8%)] backdrop-blur-2xl backdrop-saturate-150 dark:from-card/90 dark:to-card/72 dark:shadow-[0_16px_48px_-16px_oklch(0_0_0/45%)];
+  }
+
+  /** Section title pair: kicker + headline (insights column, etc.) */
+  .insight-section-kicker {
+    @apply font-heading text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground;
+  }
+  .insight-section-title {
+    @apply font-heading text-base font-semibold tracking-tight text-foreground sm:text-[1.0625rem];
   }
 
   .accent-line {

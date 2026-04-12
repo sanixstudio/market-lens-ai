@@ -63,7 +63,10 @@ export function MarketSearchFilters({
 
   return (
     <div className="filter-well shrink-0">
-      <div className="mx-auto max-w-[1760px] px-4 py-3 sm:px-6">
+      <div className="mx-auto max-w-[1760px] px-4 py-3.5 sm:px-6 sm:py-4">
+        {/* <p className="mb-2 hidden font-heading text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground sm:block">
+          Labor market query
+        </p> */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
           <p className="text-xs font-medium text-muted-foreground sm:hidden">
             Search markets
@@ -204,7 +207,7 @@ export function MarketSearchFilters({
             <Button
               type="button"
               size="default"
-              className="h-10 min-w-[7.5rem] gap-2 px-5 font-semibold shadow-sm"
+              className="h-10 min-w-[7.5rem] gap-2 px-5 font-semibold shadow-md ring-1 ring-primary/15 transition-[box-shadow,transform] hover:shadow-lg hover:ring-primary/25 active:translate-y-px dark:ring-primary/25"
               onClick={onSubmit}
               disabled={isSearching}
             >

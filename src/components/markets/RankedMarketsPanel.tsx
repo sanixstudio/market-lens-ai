@@ -100,7 +100,7 @@ function PaginationBar({
 
   return (
     <div
-      className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-t border-border/45 bg-muted/20 px-3 py-2.5 dark:border-border/40 dark:bg-muted/15 sm:px-4"
+      className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-t border-border/40 bg-gradient-to-b from-muted/30 to-muted/15 px-3 py-2.5 dark:border-border/35 dark:from-muted/25 dark:to-muted/12 sm:px-4"
       role="navigation"
       aria-label="Market list pages"
     >
@@ -211,11 +211,11 @@ export function RankedMarketsPanel({
         }
       }}
       className={cn(
-        "group w-full rounded-xl border border-border/45 bg-card text-left shadow-sm transition-[border-color,background-color,box-shadow] duration-150",
-        "hover:border-border/80 hover:bg-muted/25 hover:shadow-md dark:border-border/40 dark:hover:bg-muted/20",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35",
+        "group w-full rounded-2xl border border-border/50 bg-card text-left shadow-sm ring-1 ring-black/[0.02] transition-[border-color,background-color,box-shadow,transform] duration-200 dark:ring-white/[0.03]",
+        "hover:-translate-y-px hover:border-border/85 hover:bg-muted/30 hover:shadow-premium dark:border-border/42 dark:hover:bg-muted/25",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
         selectedId === m.regionId &&
-          "border-primary/45 bg-primary/8 shadow-md ring-1 ring-primary/15 dark:border-primary/50 dark:bg-primary/12 dark:ring-primary/20"
+          "border-primary/50 bg-gradient-to-br from-primary/[0.09] to-primary/[0.04] shadow-md ring-1 ring-primary/20 dark:border-primary/55 dark:from-primary/[0.14] dark:to-primary/[0.06] dark:ring-primary/25"
       )}
     >
       <div className="p-3 sm:p-3.5">
@@ -294,9 +294,9 @@ export function RankedMarketsPanel({
             className
           )}
         >
-          <p className="font-heading text-sm font-semibold text-foreground">No markets match</p>
-          <p className="max-w-[16rem] text-xs leading-relaxed text-muted-foreground">
-            Widen your filters or clear state codes, then run Search again.
+          <p className="font-heading text-sm font-semibold tracking-tight text-foreground">No markets match</p>
+          <p className="max-w-[17rem] text-xs leading-relaxed text-muted-foreground">
+            Broaden role or geography, or clear state filters—then run <span className="font-medium text-foreground/80">Search</span> again.
           </p>
         </div>
       );
@@ -314,9 +314,9 @@ export function RankedMarketsPanel({
   if (variant === "panel") {
     return (
       <div className={cn("flex h-full min-h-0 flex-col overflow-hidden", className)}>
-        <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border/45 bg-muted/25 px-4 py-2.5 dark:border-border/40 dark:bg-muted/20">
+        <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border/40 bg-gradient-to-r from-muted/40 via-muted/25 to-transparent px-4 py-2.5 dark:border-border/35 dark:from-muted/30 dark:via-muted/18">
           <p className="min-w-0 flex-1 text-xs font-medium text-muted-foreground">
-            <span className="text-foreground">{specialty}</span>
+            <span className="font-medium text-foreground">{specialty}</span>
             <span className="mx-1.5 text-muted-foreground/35">·</span>
             {markets.length} market{markets.length === 1 ? "" : "s"}
           </p>
