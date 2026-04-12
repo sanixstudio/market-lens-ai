@@ -2,12 +2,22 @@
 
 import type { ReactNode } from "react";
 import {
+  startTransition,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatScore, formatTechPay } from "@/lib/formatters";
@@ -18,6 +28,8 @@ import { cn } from "@/lib/utils";
 import { ConfidenceBadge } from "./ConfidenceBadge";
 
 type MarketItem = SearchMarketsResponse["markets"][number];
+
+const PAGE_SIZE = 25;
 
 type Props = {
   isLoading: boolean;
@@ -70,6 +82,66 @@ function ListBody({
   );
 }
 
+function PaginationBar({
+  page,
+  totalPages,
+  totalItems,
+  pageSize,
+  onPageChange,
+}: {
+  page: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+  onPageChange: (next: number) => void;
+}) {
+  const from = totalItems === 0 ? 0 : page * pageSize + 1;
+  const to = Math.min((page + 1) * pageSize, totalItems);
+
+  return (
+    <div
+      className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-t border-border/45 bg-muted/20 px-3 py-2.5 dark:border-border/40 dark:bg-muted/15 sm:px-4"
+      role="navigation"
+      aria-label="Market list pages"
+    >
+      <p className="text-[11px] tabular-nums text-muted-foreground sm:text-xs">
+        <span className="font-medium text-foreground">
+          {from}–{to}
+        </span>
+        <span className="mx-1">of</span>
+        {totalItems}
+      </p>
+      <div className="flex items-center gap-1">
+        <Button
+          type="button"
+          variant="outline"
+          size="icon-sm"
+          className="size-8 border-border/60 shadow-sm sm:size-9"
+          disabled={page <= 0}
+          aria-label="Previous page"
+          onClick={() => onPageChange(page - 1)}
+        >
+          <ChevronLeft className="size-4" aria-hidden />
+        </Button>
+        <span className="min-w-[4.5rem] text-center text-[11px] font-medium tabular-nums text-muted-foreground sm:text-xs">
+          {page + 1} / {totalPages}
+        </span>
+        <Button
+          type="button"
+          variant="outline"
+          size="icon-sm"
+          className="size-8 border-border/60 shadow-sm sm:size-9"
+          disabled={page >= totalPages - 1}
+          aria-label="Next page"
+          onClick={() => onPageChange(page + 1)}
+        >
+          <ChevronRight className="size-4" aria-hidden />
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 /**
  * Ranked markets list; use `variant="panel"` inside a fixed-height tab or split pane.
  */
@@ -84,6 +156,44 @@ export function RankedMarketsPanel({
   className,
   variant = "card",
 }: Props) {
+  const [page, setPage] = useState(0);
+  const listScrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const marketsSignature = useMemo(
+    () => markets.map((m) => m.regionId).join(),
+    [markets]
+  );
+
+  const totalPages = Math.max(1, Math.ceil(markets.length / PAGE_SIZE));
+
+  const pageMarkets = useMemo(() => {
+    const start = page * PAGE_SIZE;
+    return markets.slice(start, start + PAGE_SIZE);
+  }, [markets, page]);
+
+  useEffect(() => {
+    startTransition(() => {
+      const maxPage = Math.max(0, Math.ceil(markets.length / PAGE_SIZE) - 1);
+      if (selectedId) {
+        const idx = markets.findIndex((m) => m.regionId === selectedId);
+        if (idx >= 0) {
+          setPage(Math.min(Math.floor(idx / PAGE_SIZE), maxPage));
+          return;
+        }
+      }
+      setPage(0);
+    });
+  }, [marketsSignature, selectedId, markets]);
+
+  useLayoutEffect(() => {
+    const root = listScrollContainerRef.current;
+    if (!root) return;
+    const viewport = root.querySelector<HTMLElement>("[data-slot='scroll-area-viewport']");
+    if (viewport) {
+      viewport.scrollTop = 0;
+    }
+  }, [page]);
+
   const renderCard = (m: MarketItem, opts?: { hidden?: boolean }) => {
     const heat = opportunityHeatBand(m.opportunityScore);
     return (
@@ -216,13 +326,27 @@ export function RankedMarketsPanel({
             signals, sample roles, and AI commentary when enabled.
           </InfoTip>
         </div>
-        <ScrollArea className="min-h-0 flex-1 overflow-hidden">
-          <ListBody
-            markets={markets}
-            hiddenOpportunities={hiddenOpportunities}
-            renderCard={renderCard}
+        <div
+          ref={listScrollContainerRef}
+          className="flex min-h-0 flex-1 flex-col overflow-hidden"
+        >
+          <ScrollArea className="min-h-0 flex-1 overflow-hidden">
+            <ListBody
+              markets={pageMarkets}
+              hiddenOpportunities={hiddenOpportunities}
+              renderCard={renderCard}
+            />
+          </ScrollArea>
+        </div>
+        {markets.length > PAGE_SIZE ? (
+          <PaginationBar
+            page={page}
+            totalPages={totalPages}
+            totalItems={markets.length}
+            pageSize={PAGE_SIZE}
+            onPageChange={setPage}
           />
-        </ScrollArea>
+        ) : null}
       </div>
     );
   }
@@ -247,13 +371,24 @@ export function RankedMarketsPanel({
         </InfoTip>
       </CardHeader>
       <CardContent className="flex min-h-0 flex-1 flex-col p-0">
-        <ScrollArea className="h-0 min-h-[200px] flex-1">
-          <ListBody
-            markets={markets}
-            hiddenOpportunities={hiddenOpportunities}
-            renderCard={renderCard}
+        <div ref={listScrollContainerRef} className="flex min-h-0 flex-1 flex-col">
+          <ScrollArea className="h-0 min-h-[200px] flex-1">
+            <ListBody
+              markets={pageMarkets}
+              hiddenOpportunities={hiddenOpportunities}
+              renderCard={renderCard}
+            />
+          </ScrollArea>
+        </div>
+        {markets.length > PAGE_SIZE ? (
+          <PaginationBar
+            page={page}
+            totalPages={totalPages}
+            totalItems={markets.length}
+            pageSize={PAGE_SIZE}
+            onPageChange={setPage}
           />
-        </ScrollArea>
+        ) : null}
       </CardContent>
     </Card>
   );
