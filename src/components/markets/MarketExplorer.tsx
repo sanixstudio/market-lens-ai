@@ -27,7 +27,7 @@ const OpportunityMap = dynamic(
   {
     ssr: false,
     loading: () => (
-      <Skeleton className="h-full min-h-0 w-full rounded-none bg-muted/50" />
+      <Skeleton className="h-full min-h-0 w-full rounded-none bg-muted/40" />
     ),
   }
 );
@@ -133,7 +133,7 @@ export function MarketExplorer() {
       </div>
 
       <main
-        className="relative z-0 mx-auto flex min-h-0 w-full max-w-[1600px] flex-1 flex-col gap-2 overflow-hidden px-3 pb-2 pt-2 sm:px-4 sm:pb-3 sm:pt-2 lg:gap-3"
+        className="relative z-0 mx-auto flex min-h-0 w-full max-w-[1760px] flex-1 flex-col gap-3 overflow-hidden px-4 pb-4 pt-3 sm:px-6 sm:pb-6 sm:pt-4 lg:gap-4"
         aria-describedby="explorer-flow-summary"
       >
         <p id="explorer-flow-summary" className="sr-only">
@@ -144,10 +144,10 @@ export function MarketExplorer() {
         {searchQuery.isError ? (
           <div
             role="alert"
-            className="shrink-0 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm"
+            className="shrink-0 rounded-xl border border-destructive/25 bg-destructive/5 px-4 py-3.5 text-sm shadow-sm"
           >
-            <p className="font-heading font-semibold text-destructive">Search failed</p>
-            <p className="mt-1 text-destructive/90">
+            <p className="font-heading text-sm font-semibold text-destructive">Search failed</p>
+            <p className="mt-1.5 text-destructive/90">
               {(searchQuery.error as Error).message}. Set{" "}
               <code className="rounded bg-muted px-1 font-mono text-xs text-foreground">
                 DATABASE_URL
@@ -159,23 +159,28 @@ export function MarketExplorer() {
 
         <div
           className={cn(
-            "grid min-h-0 flex-1 gap-2 overflow-hidden sm:gap-3",
-            "grid-cols-1 grid-rows-[minmax(200px,32vh)_minmax(0,1fr)]",
-            "lg:grid-cols-[minmax(0,1fr)_minmax(280px,400px)] lg:grid-rows-1 lg:items-stretch"
+            "grid min-h-0 flex-1 gap-3 overflow-hidden sm:gap-4",
+            "grid-cols-1 grid-rows-[minmax(220px,34vh)_minmax(0,1fr)]",
+            "lg:grid-cols-[minmax(0,1fr)_minmax(300px,420px)] lg:grid-rows-1 lg:items-stretch"
           )}
         >
-          <Card className="panel-elevated shadow-sm flex min-h-0 flex-col overflow-hidden p-0">
-            <CardHeader className="shrink-0 flex flex-row flex-wrap items-center justify-between gap-2 border-b border-border/40 bg-muted/25 py-2.5 pl-3 pr-2 sm:pr-3 dark:border-border/35 dark:bg-muted/20">
-              <CardTitle className="text-xs font-semibold text-foreground sm:text-sm">
-                Markets map
-              </CardTitle>
-              <InfoTip label="How to read the map" side="left" align="start" className="shrink-0">
+          <Card className="panel-elevated shadow-premium flex min-h-0 flex-col overflow-hidden p-0">
+            <CardHeader className="shrink-0 flex flex-row flex-wrap items-center justify-between gap-3 border-b border-border/50 bg-muted/30 px-4 py-3 dark:border-border/40 dark:bg-muted/25">
+              <div className="min-w-0 space-y-0.5">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  Map
+                </p>
+                <CardTitle className="text-base font-semibold tracking-tight text-foreground">
+                  United States
+                </CardTitle>
+              </div>
+              <InfoTip label="How to read the map" side="left" align="end" className="shrink-0">
                 Each dot is one <span className="font-medium text-background">labor market</span>{" "}
                 (metro or remote bucket), not one job post. Color encodes opportunity score for your
                 current filters—not posting volume.
               </InfoTip>
             </CardHeader>
-            <CardContent className="relative z-0 min-h-0 flex-1 bg-muted/30 p-0 dark:bg-muted/20">
+            <CardContent className="relative z-0 min-h-0 flex-1 bg-muted/25 p-0 dark:bg-muted/15">
               <OpportunityMap
                 markets={mapMarkets}
                 selectedId={selectedId}
@@ -184,40 +189,40 @@ export function MarketExplorer() {
             </CardContent>
           </Card>
 
-          <div className="panel-elevated shadow-sm flex min-h-0 flex-col overflow-hidden p-0">
-            <div
-              className="flex shrink-0 gap-0.5 border-b border-border/40 bg-muted/40 p-1 dark:border-border/35 dark:bg-muted/25"
-              role="tablist"
-              aria-label="Markets list and details"
-            >
-              <button
-                type="button"
-                role="tab"
-                aria-selected={rightTab === "rankings"}
-                className={cn(
-                  "flex-1 rounded-md py-2 text-xs font-medium transition-colors",
-                  rightTab === "rankings"
-                    ? "bg-background text-foreground shadow-sm dark:bg-card"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-                onClick={() => setRightTab("rankings")}
+          <div className="panel-elevated shadow-premium flex min-h-0 flex-col overflow-hidden p-0">
+            <div className="shrink-0 space-y-3 border-b border-border/50 px-4 pb-4 pt-4 dark:border-border/40">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  Insight
+                </p>
+                <p className="mt-1 text-sm font-medium text-foreground">Rankings & detail</p>
+              </div>
+              <div
+                className="segmented"
+                role="tablist"
+                aria-label="Markets list and details"
               >
-                Markets
-              </button>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={rightTab === "details"}
-                className={cn(
-                  "flex-1 rounded-md py-2 text-xs font-medium transition-colors",
-                  rightTab === "details"
-                    ? "bg-background text-foreground shadow-sm dark:bg-card"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-                onClick={() => setRightTab("details")}
-              >
-                Details
-              </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={rightTab === "rankings"}
+                  data-state={rightTab === "rankings" ? "active" : "inactive"}
+                  className="segmented-trigger"
+                  onClick={() => setRightTab("rankings")}
+                >
+                  Markets
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={rightTab === "details"}
+                  data-state={rightTab === "details" ? "active" : "inactive"}
+                  className="segmented-trigger"
+                  onClick={() => setRightTab("details")}
+                >
+                  Details
+                </button>
+              </div>
             </div>
 
             <div className="relative min-h-0 flex-1 overflow-hidden">
@@ -235,7 +240,7 @@ export function MarketExplorer() {
                 />
               ) : (
                 <ScrollArea className="absolute inset-0 h-full">
-                  <div className="p-2 sm:p-3">
+                  <div className="p-3 sm:p-4">
                     <MarketDetailPanel
                       regionId={selectedId}
                       specialty={filters.specialty}

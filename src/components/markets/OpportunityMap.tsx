@@ -184,7 +184,7 @@ export function OpportunityMap({ markets, selectedId, onSelect }: Props) {
   }
 
   return (
-    <div className="relative z-0 isolate h-full min-h-0 w-full overflow-hidden rounded-b-lg bg-muted/25 dark:bg-muted/15">
+    <div className="relative z-0 isolate h-full min-h-0 w-full overflow-hidden rounded-b-xl bg-muted/20 dark:bg-muted/12">
       <Map
         ref={mapRef}
         mapboxAccessToken={mapboxAccessToken}
@@ -226,7 +226,7 @@ export function OpportunityMap({ markets, selectedId, onSelect }: Props) {
         })}
       </Map>
       <div className="pointer-events-none absolute bottom-3 left-3 z-20">
-        <div className="pointer-events-auto max-w-[11.5rem] rounded-lg border border-border/40 bg-card px-2.5 py-2 text-[10px] leading-tight shadow-sm dark:border-border/40">
+        <div className="pointer-events-auto max-w-[12rem] rounded-xl border border-border/50 bg-card/95 px-3 py-2.5 text-[10px] leading-tight shadow-premium backdrop-blur-sm dark:border-border/45">
           <div className="mb-2 flex items-center justify-between gap-1">
             <p className="font-heading text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
               Score

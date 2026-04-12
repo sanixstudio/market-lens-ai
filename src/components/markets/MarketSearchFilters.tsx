@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Loader2, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -63,8 +63,12 @@ export function MarketSearchFilters({
 
   return (
     <div className="filter-well shrink-0">
-      <div className="mx-auto max-w-[1600px] px-3 pt-2.5 sm:px-4 sm:pt-3">
-        <div className="flex flex-wrap items-end gap-2 pb-2.5 sm:gap-3 sm:pb-3">
+      <div className="mx-auto max-w-[1760px] px-4 py-3 sm:px-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+          <p className="text-xs font-medium text-muted-foreground sm:hidden">
+            Search markets
+          </p>
+          <div className="flex min-w-0 flex-1 flex-wrap items-end gap-2 sm:gap-3">
           <div className="flex shrink-0 items-center pb-1 sm:pb-1.5">
             <InfoTip label="How search works" side="bottom" align="start">
               Results are <span className="font-medium text-background">labor markets</span> (metros
@@ -73,12 +77,9 @@ export function MarketSearchFilters({
               demand, sample roles, and optional AI summary.
             </InfoTip>
           </div>
-          <div className="w-[min(100%,11rem)] shrink-0 sm:w-44">
-            <Label
-              htmlFor="specialty"
-              className="mb-1 block text-[10px] font-medium text-muted-foreground sm:text-xs"
-            >
-              Role track
+          <div className="w-[min(100%,12rem)] shrink-0 sm:w-48">
+            <Label htmlFor="specialty" className="label-product mb-1.5 block">
+              Role
             </Label>
             <Select
               value={values.specialty}
@@ -88,7 +89,7 @@ export function MarketSearchFilters({
             >
               <SelectTrigger
                 id="specialty"
-                className="h-9 w-full border-border/70 bg-card/90 text-xs sm:text-sm dark:bg-card/60"
+                className="h-10 w-full border-border/60 bg-background text-sm shadow-sm dark:bg-card"
               >
                 <SelectValue placeholder="Role" />
               </SelectTrigger>
@@ -102,11 +103,8 @@ export function MarketSearchFilters({
             </Select>
           </div>
 
-          <div className="w-24 shrink-0 sm:w-28">
-            <Label
-              htmlFor="minPay"
-              className="mb-1 block text-[10px] font-medium text-muted-foreground sm:text-xs"
-            >
+          <div className="w-[5.5rem] shrink-0 sm:w-32">
+            <Label htmlFor="minPay" className="label-product mb-1.5 block">
               Min $/yr
             </Label>
             <Input
@@ -114,27 +112,23 @@ export function MarketSearchFilters({
               type="number"
               min={0}
               step={5000}
-              placeholder="Min $/yr"
+              placeholder="Any"
               title="Minimum annual salary (USD)"
-              className="border-border/70 bg-card/90 px-2.5 text-xs sm:px-3 sm:text-sm dark:bg-card/60"
+              className="h-10 border-border/60 bg-background px-3 text-sm shadow-sm dark:bg-card"
               value={values.minPay}
               onChange={(e) => onChange({ ...values, minPay: e.target.value })}
             />
           </div>
 
-          <div className="min-w-24 flex-1 sm:max-w-40">
-            <Label
-              htmlFor="states"
-              className="mb-1 block text-[10px] font-medium text-muted-foreground sm:text-xs"
-            >
-              States{" "}
-              <span className="font-normal opacity-80">(optional)</span>
+          <div className="min-w-[8rem] flex-1 sm:max-w-[11rem]">
+            <Label htmlFor="states" className="label-product mb-1.5 block">
+              States <span className="font-normal normal-case tracking-normal opacity-70">(opt.)</span>
             </Label>
             <Input
               id="states"
-              placeholder="States e.g. CA,TX"
+              placeholder="CA, TX, NY"
               title="Comma-separated state codes"
-              className="border-border/70 bg-card/90 px-2.5 text-xs sm:px-3 sm:text-sm dark:bg-card/60"
+              className="h-10 border-border/60 bg-background px-3 text-sm shadow-sm dark:bg-card"
               value={values.states}
               onChange={(e) => onChange({ ...values, states: e.target.value })}
             />
@@ -147,8 +141,8 @@ export function MarketSearchFilters({
               size="sm"
               aria-expanded={advancedOpen}
               className={cn(
-                "h-9 gap-1 px-3 text-xs",
-                advancedOpen && "border-primary/35 bg-primary/[0.07] shadow-sm dark:bg-primary/10"
+                "h-10 gap-1.5 px-3.5 text-sm font-medium",
+                advancedOpen && "border-primary/35 bg-primary/8 shadow-sm dark:bg-primary/12"
               )}
               onClick={() => setAdvancedOpen((o) => !o)}
             >
@@ -160,12 +154,12 @@ export function MarketSearchFilters({
             </Button>
             {advancedOpen ? (
               <div
-                className="absolute right-0 top-full z-[120] mt-1.5 flex w-[min(100vw-1.5rem,18rem)] flex-col gap-3 rounded-lg border border-border/50 bg-popover p-3 shadow-md ring-1 ring-black/[0.04] dark:border-border/45 dark:bg-popover dark:ring-white/[0.06]"
+                className="absolute right-0 top-full z-[120] mt-2 flex w-[min(100vw-1.5rem,19rem)] flex-col gap-3.5 rounded-xl border border-border/50 bg-popover p-4 shadow-premium ring-1 ring-black/[0.04] dark:border-border/45 dark:bg-popover dark:ring-white/[0.06]"
                 role="region"
                 aria-label="Advanced filters"
               >
-                <div className="space-y-1">
-                  <Label htmlFor="freshness" className="text-[11px] text-muted-foreground">
+                <div className="space-y-1.5">
+                  <Label htmlFor="freshness" className="label-product">
                     Max listing age (days)
                   </Label>
                   <Input
@@ -179,8 +173,8 @@ export function MarketSearchFilters({
                     onChange={(e) => onChange({ ...values, freshnessDays: e.target.value })}
                   />
                 </div>
-                <div className="space-y-1">
-                  <Label className="text-[11px] text-muted-foreground">Rank by</Label>
+                <div className="space-y-1.5">
+                  <Label className="label-product">Rank by</Label>
                   <Select
                     value={values.competitionPreference}
                     onValueChange={(competitionPreference) => {
@@ -204,22 +198,28 @@ export function MarketSearchFilters({
               </div>
             ) : null}
           </div>
+          </div>
 
-          <div className="ml-auto flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2 sm:pl-2">
             <Button
               type="button"
-              size="sm"
-              className="px-5"
+              size="default"
+              className="h-10 min-w-[7.5rem] gap-2 px-5 font-semibold shadow-sm"
               onClick={onSubmit}
               disabled={isSearching}
             >
-              {isSearching ? "…" : "Search"}
+              {isSearching ? (
+                <Loader2 className="size-4 animate-spin" aria-hidden />
+              ) : (
+                <Search className="size-4 opacity-90" aria-hidden />
+              )}
+              {isSearching ? "Searching" : "Search"}
             </Button>
             <Button
               type="button"
               variant="ghost"
-              size="sm"
-              className="px-2.5 text-xs text-muted-foreground hover:text-foreground"
+              size="default"
+              className="h-10 px-3 text-sm text-muted-foreground hover:text-foreground"
               onClick={onReset}
             >
               Reset

@@ -24,7 +24,7 @@ export function MarketExplanationCard({
   onFeedback,
   embedded = false,
 }: Props) {
-  const cardRadius = "rounded-lg";
+  const cardRadius = "rounded-xl";
 
   if (isLoading) {
     return (

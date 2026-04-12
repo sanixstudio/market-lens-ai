@@ -53,8 +53,8 @@ function ListBody({
   renderCard: (m: MarketItem, opts?: { hidden?: boolean }) => ReactNode;
 }) {
   return (
-    <div className="space-y-4 p-2 sm:p-3">
-      <div className="flex flex-col gap-2">{markets.map((m) => renderCard(m))}</div>
+    <div className="space-y-4 px-3 pb-4 pt-1 sm:px-4">
+      <div className="flex flex-col gap-2.5">{markets.map((m) => renderCard(m))}</div>
       {hiddenOpportunities.length > 0 ? (
         <div className="border-t border-border/50 pt-3">
           <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
@@ -98,19 +98,19 @@ export function RankedMarketsPanel({
         }
       }}
       className={cn(
-        "w-full rounded-lg border border-border/40 bg-card text-left shadow-sm transition-colors",
-        "hover:border-border hover:bg-muted/30 dark:border-border/35 dark:hover:bg-muted/20",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
+        "group w-full rounded-xl border border-border/45 bg-card text-left shadow-sm transition-[border-color,background-color,box-shadow] duration-150",
+        "hover:border-border/80 hover:bg-muted/25 hover:shadow-md dark:border-border/40 dark:hover:bg-muted/20",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35",
         selectedId === m.regionId &&
-          "border-primary/40 bg-primary/[0.06] dark:border-primary/45 dark:bg-primary/10"
+          "border-primary/45 bg-primary/8 shadow-md ring-1 ring-primary/15 dark:border-primary/50 dark:bg-primary/12 dark:ring-primary/20"
       )}
     >
-      <div className="p-2.5 sm:p-3">
-        <div className="flex items-start justify-between gap-2">
-          <p className="font-heading text-sm font-semibold leading-snug text-foreground">
+      <div className="p-3 sm:p-3.5">
+        <div className="flex items-start justify-between gap-3">
+          <p className="font-heading text-[0.9375rem] font-semibold leading-snug text-foreground">
             {m.regionName}
           </p>
-          <span className="shrink-0 rounded-md bg-muted px-2 py-0.5 font-mono text-[10px] font-medium tabular-nums text-foreground dark:bg-muted/80">
+          <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-0.5 font-mono text-[11px] font-semibold tabular-nums text-primary dark:bg-primary/20">
             {formatScore(m.opportunityScore)}
           </span>
         </div>
@@ -171,11 +171,14 @@ export function RankedMarketsPanel({
       return (
         <div
           className={cn(
-            "flex h-full min-h-0 flex-col items-center justify-center p-4 text-center text-sm text-muted-foreground",
+            "flex h-full min-h-0 flex-col items-center justify-center gap-2 p-6 text-center",
             className
           )}
         >
-          No markets match. Loosen filters and search again.
+          <p className="font-heading text-sm font-semibold text-foreground">No markets match</p>
+          <p className="max-w-[16rem] text-xs leading-relaxed text-muted-foreground">
+            Widen your filters or clear state codes, then run Search again.
+          </p>
         </div>
       );
     }
@@ -192,9 +195,11 @@ export function RankedMarketsPanel({
   if (variant === "panel") {
     return (
       <div className={cn("flex h-full min-h-0 flex-col overflow-hidden", className)}>
-        <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border/40 bg-muted/30 px-3 py-2 dark:border-border/35">
-          <p className="min-w-0 flex-1 text-[11px] font-medium text-muted-foreground">
-            {specialty} · {markets.length} market{markets.length === 1 ? "" : "s"}
+        <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border/45 bg-muted/25 px-4 py-2.5 dark:border-border/40 dark:bg-muted/20">
+          <p className="min-w-0 flex-1 text-xs font-medium text-muted-foreground">
+            <span className="text-foreground">{specialty}</span>
+            <span className="mx-1.5 text-muted-foreground/35">·</span>
+            {markets.length} market{markets.length === 1 ? "" : "s"}
           </p>
           <InfoTip label="Using the market list" side="bottom" align="end" className="shrink-0">
             Tap a row to select that market and jump to the{" "}

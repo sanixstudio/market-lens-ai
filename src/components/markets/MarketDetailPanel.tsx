@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -82,28 +82,35 @@ export function MarketDetailPanel({
   });
 
   const stackGap = embedded ? "gap-2" : "gap-3 lg:gap-4";
-  const cardRadius = "rounded-lg";
+  /** Card primitive already applies border + shadow; tighten corner radius for flagship shells. */
+  const cardShell = "rounded-xl";
 
   if (!regionId) {
     return (
       <Card
         className={cn(
-          "border-dashed border-primary/20 bg-card/50 shadow-sm",
-          cardRadius
+          "border-dashed border-border/55 bg-muted/20 shadow-sm dark:border-border/50 dark:bg-muted/10",
+          "rounded-xl"
         )}
       >
-        <CardHeader className="space-y-2 pb-3 pt-4">
-          <div className="flex items-center gap-1.5">
-            <CardTitle className="text-sm font-semibold">Details</CardTitle>
-            <InfoTip label="Why Details is empty" side="bottom" align="start" className="size-6">
-              Details applies to a whole <span className="font-medium text-background">market</span>{" "}
-              (metro or remote region), not one job. Select a dot on the map or a row under Markets,
-              then switch back here for pay, activity, samples, and AI when configured.
-            </InfoTip>
+        <CardHeader className="space-y-4 pb-6 pt-8 text-center sm:px-8">
+          <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-background shadow-sm ring-1 ring-border/60 dark:bg-card dark:ring-border/50">
+            <MapPin className="size-7 text-muted-foreground" strokeWidth={1.5} aria-hidden />
           </div>
-          <CardDescription className="text-xs leading-relaxed">
-            Select a market from the map or the Markets tab.
-          </CardDescription>
+          <div className="space-y-2">
+            <div className="flex items-center justify-center gap-1.5">
+              <CardTitle className="text-base font-semibold">Market details</CardTitle>
+              <InfoTip label="Why Details is empty" side="bottom" align="center" className="size-7">
+                Details applies to a whole{" "}
+                <span className="font-medium text-background">market</span> (metro or remote region),
+                not one job. Select a dot on the map or a row under Markets, then switch back here for
+                pay, activity, samples, and AI when configured.
+              </InfoTip>
+            </div>
+            <CardDescription className="mx-auto max-w-[18rem] text-sm leading-relaxed">
+              Choose a region on the map or from the Markets tab to see pay, demand, and listings.
+            </CardDescription>
+          </div>
         </CardHeader>
       </Card>
     );
@@ -111,7 +118,7 @@ export function MarketDetailPanel({
 
   if (detailQuery.isLoading) {
     return (
-      <Card className={cn("shadow-sm", cardRadius)}>
+      <Card className={cn(cardShell)}>
         <CardHeader className="space-y-0 py-3">
           <CardTitle className="text-sm font-semibold">Loading…</CardTitle>
         </CardHeader>
@@ -121,7 +128,7 @@ export function MarketDetailPanel({
 
   if (detailQuery.isError || !detailQuery.data) {
     return (
-      <Card className={cn("border-destructive/35 shadow-sm", cardRadius)}>
+      <Card className={cn(cardShell, "border-destructive/35")}>
         <CardHeader className="space-y-0 py-3">
           <CardTitle className="text-sm font-semibold text-destructive">
             Could not load market
@@ -143,20 +150,25 @@ export function MarketDetailPanel({
 
   return (
     <div className={cn("flex flex-col", stackGap)}>
-      <Card className={cn("shadow-sm", cardRadius)}>
+      <Card className={cn(cardShell)}>
         <CardHeader
           className={cn(
-            "space-y-2 border-b border-border/50 bg-muted/10 dark:bg-muted/5",
+            "space-y-2 border-b border-border/50 bg-muted/25 dark:border-border/45 dark:bg-muted/15",
             headerPad
           )}
         >
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div>
-              <CardTitle className="text-base font-semibold leading-tight">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                Selected market
+              </p>
+              <CardTitle className="mt-1 text-lg font-semibold leading-tight tracking-tight">
                 {d.regionName}
               </CardTitle>
-              <CardDescription className="mt-0.5 text-xs">
-                {d.specialty} · {formatScore(d.metrics.opportunityScore)}
+              <CardDescription className="mt-1 text-sm">
+                {d.specialty}
+                <span className="mx-1.5 text-muted-foreground/40">·</span>
+                Score {formatScore(d.metrics.opportunityScore)}
               </CardDescription>
             </div>
             <ConfidenceBadge score={d.metrics.confidenceScore} />
@@ -170,38 +182,50 @@ export function MarketDetailPanel({
         <CardContent className={cn("text-sm", contentPad)}>
           <div
             className={cn(
-              "grid grid-cols-2 gap-2.5 rounded-lg border border-border/40 bg-muted/35 p-3 sm:grid-cols-3 dark:border-border/35 dark:bg-muted/25",
-              embedded && "gap-2 p-2.5"
+              "grid grid-cols-2 gap-3 rounded-xl border border-border/45 bg-muted/30 p-3.5 sm:grid-cols-3 dark:border-border/40 dark:bg-muted/20",
+              embedded && "gap-2.5 p-3"
             )}
           >
             <div>
-              <p className="text-xs text-muted-foreground">Median</p>
+              <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                Median
+              </p>
               <p className="mt-0.5 font-semibold tabular-nums">
                 {formatTechPay(d.metrics.medianPay)}
               </p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Average</p>
+              <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                Average
+              </p>
               <p className="mt-0.5 font-semibold tabular-nums">
                 {formatTechPay(d.metrics.avgPay)}
               </p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">P90</p>
+              <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                P90
+              </p>
               <p className="mt-0.5 font-semibold tabular-nums">
                 {formatTechPay(d.metrics.payP90)}
               </p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Active roles</p>
+              <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                Active roles
+              </p>
               <p className="mt-0.5 font-semibold tabular-nums">{d.metrics.activeJobs}</p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Fresh (7d)</p>
+              <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                Fresh (7d)
+              </p>
               <p className="mt-0.5 font-semibold tabular-nums">{d.metrics.freshJobs7d}</p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Saturation proxy</p>
+              <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                Saturation
+              </p>
               <p className="mt-0.5 font-semibold tabular-nums">
                 {d.metrics.competitionScore != null
                   ? formatScore(d.metrics.competitionScore)
@@ -209,21 +233,21 @@ export function MarketDetailPanel({
               </p>
             </div>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2.5">
             <Button
               type="button"
-              size="sm"
-              variant="secondary"
-              className="rounded-lg"
+              size="default"
+              variant="default"
+              className="font-semibold shadow-sm"
               onClick={onCompare}
             >
               Compare
             </Button>
             <Button
               type="button"
-              size="sm"
+              size="default"
               variant="outline"
-              className="rounded-lg"
+              className="font-medium"
               onClick={() => {
                 onSave();
                 if (queryId) {
@@ -259,9 +283,9 @@ export function MarketDetailPanel({
         }
       />
 
-      <Card className={cn("shadow-sm", cardRadius)}>
-        <CardHeader className="space-y-0 border-b border-border/50 bg-muted/10 py-2.5 dark:bg-muted/5 sm:py-3">
-          <CardTitle className="text-sm font-semibold">Listings</CardTitle>
+      <Card className={cn(cardShell)}>
+        <CardHeader className="space-y-0 border-b border-border/50 bg-muted/20 py-3 dark:border-border/45 dark:bg-muted/10 sm:py-3.5">
+          <CardTitle className="text-sm font-semibold tracking-tight">Sample listings</CardTitle>
         </CardHeader>
         <CardContent className="pt-2 text-sm sm:pt-3">
           {d.sampleJobs.length === 0 ? (

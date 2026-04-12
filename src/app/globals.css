@@ -49,38 +49,38 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Light: cool slate field, white surfaces, deep indigo accent (high contrast vs old near-white) */
+/* Light: flagship SaaS canvas — neutral base, indigo accent, crisp surfaces */
 :root {
   /*
     Stacking: sticky chrome ~100, More popover ~120, select ~300,
     tooltips --z-tooltip, sheet backdrop 400, sheet 410.
   */
   --z-tooltip: 380;
-  --background: oklch(0.928 0.024 265);
-  --foreground: oklch(0.2 0.04 265);
+  --background: oklch(0.965 0.006 264);
+  --foreground: oklch(0.17 0.028 264);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.2 0.04 265);
+  --card-foreground: oklch(0.17 0.028 264);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.2 0.04 265);
-  --primary: oklch(0.42 0.24 268);
-  --primary-foreground: oklch(0.99 0.004 264);
-  --secondary: oklch(0.94 0.035 268);
-  --secondary-foreground: oklch(0.26 0.14 268);
-  --muted: oklch(0.94 0.02 265);
-  --muted-foreground: oklch(0.42 0.045 265);
-  --accent: oklch(0.92 0.055 268);
-  --accent-foreground: oklch(0.28 0.16 268);
+  --popover-foreground: oklch(0.17 0.028 264);
+  --primary: oklch(0.44 0.2 268);
+  --primary-foreground: oklch(0.995 0.003 264);
+  --secondary: oklch(0.955 0.02 268);
+  --secondary-foreground: oklch(0.28 0.12 268);
+  --muted: oklch(0.955 0.012 265);
+  --muted-foreground: oklch(0.44 0.035 265);
+  --accent: oklch(0.94 0.04 268);
+  --accent-foreground: oklch(0.26 0.14 268);
   --destructive: oklch(0.52 0.22 25);
-  --border: oklch(0.88 0.02 265);
-  --input: oklch(0.88 0.02 265);
-  --ring: oklch(0.48 0.22 268);
+  --border: oklch(0.9 0.014 265);
+  --input: oklch(0.9 0.014 265);
+  --ring: oklch(0.5 0.18 268);
   --chart-1: oklch(0.56 0.2 268);
   --chart-2: oklch(0.6 0.14 200);
   --chart-3: oklch(0.54 0.12 160);
   --chart-4: oklch(0.65 0.18 290);
   --chart-5: oklch(0.48 0.08 264);
-  /* ~8px base: one radius family for controls + cards (Linear / Stripe-style) */
-  --radius: 0.5rem;
+  /* Controls ~10px; paired with rounded-xl shells in layout */
+  --radius: 0.625rem;
   --sidebar: oklch(0.985 0.01 264);
   --sidebar-foreground: oklch(0.17 0.028 264);
   --sidebar-primary: oklch(0.46 0.19 265);
@@ -91,26 +91,26 @@
   --sidebar-ring: oklch(0.52 0.17 265);
 }
 
-/* Dark: ink-navy depth, luminous violet accent */
+/* Dark: deep ink surfaces, readable contrast */
 .dark {
-  --background: oklch(0.12 0.032 264);
-  --foreground: oklch(0.97 0.008 264);
-  --card: oklch(0.165 0.038 264);
-  --card-foreground: oklch(0.97 0.008 264);
-  --popover: oklch(0.175 0.04 264);
-  --popover-foreground: oklch(0.97 0.008 264);
-  --primary: oklch(0.74 0.17 268);
-  --primary-foreground: oklch(0.13 0.045 268);
-  --secondary: oklch(0.22 0.038 264);
-  --secondary-foreground: oklch(0.93 0.02 264);
-  --muted: oklch(0.21 0.036 264);
-  --muted-foreground: oklch(0.66 0.04 264);
-  --accent: oklch(0.25 0.055 268);
-  --accent-foreground: oklch(0.92 0.06 268);
+  --background: oklch(0.13 0.028 264);
+  --foreground: oklch(0.97 0.006 264);
+  --card: oklch(0.17 0.034 264);
+  --card-foreground: oklch(0.97 0.006 264);
+  --popover: oklch(0.185 0.038 264);
+  --popover-foreground: oklch(0.97 0.006 264);
+  --primary: oklch(0.72 0.16 268);
+  --primary-foreground: oklch(0.14 0.04 268);
+  --secondary: oklch(0.22 0.034 264);
+  --secondary-foreground: oklch(0.93 0.018 264);
+  --muted: oklch(0.22 0.032 264);
+  --muted-foreground: oklch(0.64 0.038 264);
+  --accent: oklch(0.26 0.05 268);
+  --accent-foreground: oklch(0.93 0.05 268);
   --destructive: oklch(0.63 0.2 22);
-  --border: oklch(0.3 0.04 264);
-  --input: oklch(0.3 0.04 264);
-  --ring: oklch(0.65 0.16 268);
+  --border: oklch(0.28 0.038 264);
+  --input: oklch(0.28 0.038 264);
+  --ring: oklch(0.62 0.15 268);
   --chart-1: oklch(0.72 0.17 268);
   --chart-2: oklch(0.64 0.12 200);
   --chart-3: oklch(0.68 0.14 160);
@@ -141,47 +141,64 @@
 @layer utilities {
   .mesh-page {
     background-color: var(--background);
-    background-image: radial-gradient(
-      ellipse 120% 80% at 50% -30%,
-      oklch(0.62 0.14 268 / 12%),
-      transparent 55%
-    );
+    background-image:
+      radial-gradient(ellipse 100% 60% at 50% -25%, oklch(0.58 0.12 268 / 9%), transparent 52%),
+      radial-gradient(ellipse 80% 40% at 100% 0%, oklch(0.55 0.1 280 / 5%), transparent 45%);
   }
   .dark .mesh-page {
-    background-image: radial-gradient(
-      ellipse 100% 70% at 50% -20%,
-      oklch(0.35 0.16 268 / 35%),
-      transparent 50%
-    );
+    background-image:
+      radial-gradient(ellipse 90% 55% at 50% -15%, oklch(0.32 0.14 268 / 28%), transparent 48%),
+      radial-gradient(ellipse 70% 35% at 100% 0%, oklch(0.28 0.12 290 / 18%), transparent 40%);
   }
 
   .shadow-premium {
     box-shadow:
-      0 1px 2px oklch(0 0 0 / 4%),
-      0 8px 24px -6px oklch(0 0 0 / 8%);
+      0 1px 0 oklch(0 0 0 / 4%),
+      0 1px 2px oklch(0 0 0 / 5%),
+      0 12px 32px -8px oklch(0 0 0 / 10%);
   }
   .dark .shadow-premium {
     box-shadow:
-      0 1px 2px oklch(0 0 0 / 20%),
-      0 12px 28px -8px oklch(0 0 0 / 45%);
+      0 1px 0 oklch(1 1 1 / 6%),
+      0 1px 2px oklch(0 0 0 / 25%),
+      0 16px 40px -12px oklch(0 0 0 / 55%);
   }
 
   .text-gradient-brand {
-    @apply bg-gradient-to-br from-[oklch(0.42_0.24_268)] via-primary to-[oklch(0.52_0.22_290)] bg-clip-text text-transparent dark:from-[oklch(0.82_0.14_268)] dark:via-[oklch(0.76_0.16_275)] dark:to-[oklch(0.72_0.14_300)];
+    @apply bg-gradient-to-br from-[oklch(0.38_0.2_268)] via-primary to-[oklch(0.48_0.18_285)] bg-clip-text text-transparent dark:from-[oklch(0.78_0.14_268)] dark:via-[oklch(0.72_0.15_275)] dark:to-[oklch(0.68_0.12_295)];
   }
 
-  /** Filter strip */
+  /** Product labels: form fields, table headers */
+  .label-product {
+    @apply text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground sm:text-xs sm:tracking-[0.06em];
+  }
+
+  /** Filter strip under app header */
   .filter-well {
-    @apply border-b border-border/55 bg-card/95 shadow-sm backdrop-blur-md dark:border-border/50 dark:bg-card/90 dark:shadow-md dark:shadow-black/20;
+    @apply border-b border-border/60 bg-card/90 shadow-[0_1px_0_oklch(0_0_0/4%)] backdrop-blur-xl backdrop-saturate-150 dark:border-border/55 dark:bg-card/85 dark:shadow-[0_1px_0_oklch(1_1_1/6%)];
   }
 
-  /** Primary panels in the explorer grid (pair with `.shadow-premium` in markup) */
+  /** Explorer map / sidebar shells */
   .panel-elevated {
-    @apply rounded-lg border border-border/40 bg-card dark:border-border/40 dark:bg-card;
+    @apply rounded-xl border border-border/55 bg-card dark:border-border/50 dark:bg-card;
+  }
+
+  /** iOS-style segmented control for Markets / Details */
+  .segmented {
+    @apply flex gap-0.5 rounded-[10px] bg-muted/80 p-1 dark:bg-muted/50;
+  }
+  .segmented-trigger {
+    @apply flex-1 rounded-lg py-2.5 text-sm font-medium text-muted-foreground transition-[color,background-color,box-shadow] duration-150 ease-out;
+  }
+  .segmented-trigger:hover[data-state="inactive"] {
+    @apply text-foreground/90;
+  }
+  .segmented-trigger[data-state="active"] {
+    @apply bg-card text-foreground shadow-sm dark:bg-background dark:shadow-black/25;
   }
 
   .chrome-glass {
-    @apply border-b border-border/60 bg-card/75 shadow-[0_8px_32px_-8px_oklch(0_0_0/8%)] backdrop-blur-xl backdrop-saturate-150 dark:bg-card/70 dark:shadow-[0_12px_40px_-12px_oklch(0_0_0/40%)];
+    @apply border-b border-border/60 bg-card/80 shadow-[0_8px_32px_-8px_oklch(0_0_0/6%)] backdrop-blur-xl backdrop-saturate-150 dark:bg-card/75 dark:shadow-[0_12px_40px_-12px_oklch(0_0_0/35%)];
   }
 
   .accent-line {
