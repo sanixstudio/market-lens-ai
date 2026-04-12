@@ -9,11 +9,20 @@
  *
  * The script clears jobs/regions and related rows, then inserts deterministic data so
  * rankings, freshness, and pay spreads look realistic enough for UI review.
+ *
+ * US metros: see `src/lib/data/us-metro-regions.ts` (50 states + DC, major MSAs).
+ * Synthetic job counts scale with `SEED_SCALE` but stay bounded vs. the old 7-metro seed.
  */
 import { createHash } from "node:crypto";
 import "dotenv/config";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
+import {
+  US_METRO_REGIONS,
+  dataMlTemplateForRegion,
+  devopsTemplateForRegion,
+  sweWeeklyAnchorsForRegion,
+} from "../src/lib/data/us-metro-regions";
 import * as schema from "../src/lib/db/schema";
 
 const connectionString = process.env.DATABASE_URL;
@@ -43,70 +52,8 @@ function normHash(parts: string[]): string {
   return createHash("sha256").update(parts.join("|")).digest("hex").slice(0, 32);
 }
 
-const REGIONS: (typeof schema.marketRegions.$inferInsert)[] = [
-  {
-    id: "reg_phoenix_az",
-    regionType: "metro",
-    regionName: "Phoenix, AZ",
-    state: "AZ",
-    centroidLat: 33.4484,
-    centroidLng: -112.074,
-    geohash: "9tbq",
-  },
-  {
-    id: "reg_los_angeles_ca",
-    regionType: "metro",
-    regionName: "Los Angeles, CA",
-    state: "CA",
-    centroidLat: 34.0522,
-    centroidLng: -118.2437,
-    geohash: "9q5ctr",
-  },
-  {
-    id: "reg_san_diego_ca",
-    regionType: "metro",
-    regionName: "San Diego, CA",
-    state: "CA",
-    centroidLat: 32.7157,
-    centroidLng: -117.1611,
-    geohash: "9mud",
-  },
-  {
-    id: "reg_denver_co",
-    regionType: "metro",
-    regionName: "Denver, CO",
-    state: "CO",
-    centroidLat: 39.7392,
-    centroidLng: -104.9903,
-    geohash: "9xj5",
-  },
-  {
-    id: "reg_dallas_tx",
-    regionType: "metro",
-    regionName: "Dallas, TX",
-    state: "TX",
-    centroidLat: 32.7767,
-    centroidLng: -96.797,
-    geohash: "9vff",
-  },
-  {
-    id: "reg_seattle_wa",
-    regionType: "metro",
-    regionName: "Seattle, WA",
-    state: "WA",
-    centroidLat: 47.6062,
-    centroidLng: -122.3321,
-    geohash: "c22yz",
-  },
-  {
-    id: "reg_las_vegas_nv",
-    regionType: "metro",
-    regionName: "Las Vegas, NV",
-    state: "NV",
-    centroidLat: 36.1699,
-    centroidLng: -115.1398,
-    geohash: "9qqju",
-  },
+/** National remote buckets (always last so metro list stays contiguous in maps). */
+const REMOTE_REGIONS: (typeof schema.marketRegions.$inferInsert)[] = [
   {
     id: "reg_remote_us",
     regionType: "remote",
@@ -125,6 +72,11 @@ const REGIONS: (typeof schema.marketRegions.$inferInsert)[] = [
     centroidLng: 0,
     geohash: null,
   },
+];
+
+const REGIONS: (typeof schema.marketRegions.$inferInsert)[] = [
+  ...US_METRO_REGIONS,
+  ...REMOTE_REGIONS,
 ];
 
 type JobInsert = typeof schema.jobs.$inferInsert;
@@ -212,37 +164,8 @@ function makeJob(input: {
   };
 }
 
-/** Anchor weekly pays (~annual ÷ 52) used to synthesize larger slices per metro. */
-const sweWeeklyByRegion: Record<string, number[]> = {
-  reg_los_angeles_ca: [4250, 4180, 4100, 4020, 3880],
-  reg_san_diego_ca: [3920, 3780, 3650, 3580],
-  reg_phoenix_az: [3250, 3180, 3050, 2980, 2920],
-  reg_denver_co: [3480, 3380, 3280, 3150],
-  reg_dallas_tx: [3180, 3080, 2980, 2920, 2850],
-  reg_seattle_wa: [4380, 4300, 4180, 4050],
-  reg_las_vegas_nv: [3050, 2950, 2880, 2820],
-};
-
-/** Data & ML: baseline weekly pay and template count (scaled by SEED_SCALE). */
-const dataMlTemplate: Record<string, { baseWeekly: number; baseCount: number }> = {
-  reg_los_angeles_ca: { baseWeekly: 3720, baseCount: 9 },
-  reg_seattle_wa: { baseWeekly: 3850, baseCount: 8 },
-  reg_san_diego_ca: { baseWeekly: 3500, baseCount: 6 },
-  reg_denver_co: { baseWeekly: 3320, baseCount: 7 },
-  reg_phoenix_az: { baseWeekly: 3080, baseCount: 8 },
-  reg_dallas_tx: { baseWeekly: 3180, baseCount: 7 },
-  reg_las_vegas_nv: { baseWeekly: 2920, baseCount: 5 },
-};
-
-const devopsTemplate: Record<string, { baseWeekly: number; baseCount: number }> = {
-  reg_los_angeles_ca: { baseWeekly: 3650, baseCount: 6 },
-  reg_seattle_wa: { baseWeekly: 3950, baseCount: 7 },
-  reg_dallas_tx: { baseWeekly: 3250, baseCount: 8 },
-  reg_denver_co: { baseWeekly: 3400, baseCount: 6 },
-  reg_phoenix_az: { baseWeekly: 3150, baseCount: 5 },
-  reg_san_diego_ca: { baseWeekly: 3550, baseCount: 5 },
-  reg_las_vegas_nv: { baseWeekly: 3000, baseCount: 4 },
-};
+/** Legacy metro count used only to keep total synthetic job volume stable as the catalog grows. */
+const LEGACY_METRO_COUNT = 7;
 
 function clampWeeklyUsd(n: number): number {
   return Math.max(1800, Math.min(8500, Math.round(n)));
@@ -269,17 +192,27 @@ function buildJobs(seedScale: number): JobInsert[] {
     );
   };
 
-  const sweSlotsPerMetro = Math.max(12, 10 * seedScale);
+  const metros = REGIONS.filter((r) => r.regionType === "metro");
+  const metroCount = metros.length;
+  const sweSlotsPerMetro = Math.max(
+    6,
+    Math.min(
+      40,
+      Math.floor(
+        (LEGACY_METRO_COUNT * Math.max(12, 10 * seedScale)) / Math.max(1, metroCount)
+      )
+    )
+  );
 
-  for (const [regionId, pays] of Object.entries(sweWeeklyByRegion)) {
-    const region = REGIONS.find((r) => r.id === regionId)!;
+  for (const region of metros) {
+    const pays = sweWeeklyAnchorsForRegion(region.id, region.state);
     for (let i = 0; i < sweSlotsPerMetro; i++) {
       add({
-        sourceId: `seed:swe:${regionId}:${i}`,
+        sourceId: `seed:swe:${region.id}:${i}`,
         title: SWE_TITLES[i % SWE_TITLES.length]!,
         specialty: "Software Engineer",
-        regionId,
-        city: region.regionName.split(",")[0]!,
+        regionId: region.id,
+        city: region.regionName.split(",")[0]!.trim(),
         state: region.state!,
         lat: region.centroidLat + (i % 7) * 0.018 - 0.05,
         lng: region.centroidLng + (i % 5) * 0.022 - 0.04,
@@ -291,16 +224,19 @@ function buildJobs(seedScale: number): JobInsert[] {
     }
   }
 
-  for (const [regionId, cfg] of Object.entries(dataMlTemplate)) {
-    const region = REGIONS.find((r) => r.id === regionId)!;
-    const count = Math.max(cfg.baseCount, cfg.baseCount * seedScale);
+  for (const region of metros) {
+    const cfg = dataMlTemplateForRegion(region.id, region.state);
+    const count = Math.max(
+      2,
+      Math.floor((cfg.baseCount * seedScale * LEGACY_METRO_COUNT) / Math.max(1, metroCount))
+    );
     for (let i = 0; i < count; i++) {
       add({
-        sourceId: `seed:data:${regionId}:${i}`,
+        sourceId: `seed:data:${region.id}:${i}`,
         title: DATA_TITLES[i % DATA_TITLES.length]!,
         specialty: "Data & ML",
-        regionId,
-        city: region.regionName.split(",")[0]!,
+        regionId: region.id,
+        city: region.regionName.split(",")[0]!.trim(),
         state: region.state!,
         lat: region.centroidLat - (i % 6) * 0.014 + 0.02,
         lng: region.centroidLng + (i % 5) * 0.011,
@@ -312,16 +248,19 @@ function buildJobs(seedScale: number): JobInsert[] {
     }
   }
 
-  for (const [regionId, cfg] of Object.entries(devopsTemplate)) {
-    const region = REGIONS.find((r) => r.id === regionId)!;
-    const count = Math.max(cfg.baseCount, cfg.baseCount * seedScale);
+  for (const region of metros) {
+    const cfg = devopsTemplateForRegion(region.id, region.state);
+    const count = Math.max(
+      2,
+      Math.floor((cfg.baseCount * seedScale * LEGACY_METRO_COUNT) / Math.max(1, metroCount))
+    );
     for (let i = 0; i < count; i++) {
       add({
-        sourceId: `seed:devops:${regionId}:${i}`,
+        sourceId: `seed:devops:${region.id}:${i}`,
         title: DEVOPS_TITLES[i % DEVOPS_TITLES.length]!,
         specialty: "DevOps / SRE",
-        regionId,
-        city: region.regionName.split(",")[0]!,
+        regionId: region.id,
+        city: region.regionName.split(",")[0]!.trim(),
         state: region.state!,
         lat: region.centroidLat + (i % 5) * 0.012,
         lng: region.centroidLng - (i % 6) * 0.013,
