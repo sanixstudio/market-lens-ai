@@ -4,6 +4,7 @@
  * Mapbox stack (react-map-gl Mapbox integration):
  * @see https://visgl.github.io/react-map-gl/docs/api-reference/mapbox/map
  * Token: `NEXT_PUBLIC_MAPBOX_TOKEN` in `.env.local`.
+ * Optional style: `NEXT_PUBLIC_MAPBOX_STYLE` (Mapbox style URL or Studio style id).
  */
 
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -25,7 +26,13 @@ import { InfoTip } from "@/components/ui/info-tip";
 import { heatMarkerClass, opportunityHeatBand } from "@/lib/opportunity-heat";
 import { cn } from "@/lib/utils";
 
-const MAP_STYLE = "mapbox://styles/mapbox/light-v10";
+/** Default: minimal light canvas (good contrast for heat markers). Override for a road-map look. */
+function readMapStyle(): string {
+  return (
+    process.env.NEXT_PUBLIC_MAPBOX_STYLE?.trim() ||
+    "mapbox://styles/mapbox/light-v12"
+  );
+}
 
 function readMapboxAccessToken(): string {
   return (
@@ -130,6 +137,7 @@ function applyCameraToMarkets(map: MapboxMap, list: MapMarket[]): void {
 
 export function OpportunityMap({ markets, selectedId, onSelect }: Props) {
   const mapboxAccessToken = useMemo(() => readMapboxAccessToken(), []);
+  const mapStyle = useMemo(() => readMapStyle(), []);
   const mapRef = useRef<MapRef>(null);
   const [mapLoadGeneration, setMapLoadGeneration] = useState(0);
   const marketsRef = useRef(markets);
@@ -186,7 +194,8 @@ export function OpportunityMap({ markets, selectedId, onSelect }: Props) {
         mapboxAccessToken={mapboxAccessToken}
         initialViewState={US_OVERVIEW}
         style={{ width: "100%", height: "100%" }}
-        mapStyle={MAP_STYLE}
+        mapStyle={mapStyle}
+        projection="mercator"
         reuseMaps
         dragRotate={false}
         touchPitch={false}
