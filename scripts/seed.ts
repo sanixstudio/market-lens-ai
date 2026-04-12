@@ -391,6 +391,7 @@ async function main() {
   await db.delete(schema.feedbackEvents);
   await db.delete(schema.aiInsightsCache);
   await db.delete(schema.userQueries);
+  await db.delete(schema.watchlistItems);
   await db.delete(schema.marketMetrics);
   await db.delete(schema.jobs);
   await db.delete(schema.marketRegions);

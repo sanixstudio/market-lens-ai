@@ -116,6 +116,23 @@ export const feedbackEvents = pgTable("feedback_events", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+/**
+ * Saved markets for anonymous (or future authenticated) users.
+ * Client sends `X-MarketLens-Anon: <uuid>` on watchlist routes.
+ */
+export const watchlistItems = pgTable(
+  "watchlist_items",
+  {
+    id: text("id").primaryKey(),
+    anonKey: text("anon_key").notNull(),
+    regionId: text("region_id")
+      .notNull()
+      .references(() => marketRegions.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("watchlist_items_anon_region_unique").on(t.anonKey, t.regionId)]
+);
+
 export type JobRow = typeof jobs.$inferSelect;
 export type MarketRegionRow = typeof marketRegions.$inferSelect;
 export type MarketMetricsRow = typeof marketMetrics.$inferSelect;

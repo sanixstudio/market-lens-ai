@@ -15,6 +15,13 @@
       "when": 1775898316938,
       "tag": "0001_unknown_patriot",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1775900000000,
+      "tag": "0002_watchlist",
+      "breakpoints": true
     }
   ]
 }

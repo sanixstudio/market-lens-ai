@@ -25,7 +25,7 @@ import { InfoTip } from "@/components/ui/info-tip";
 import { heatMarkerClass, opportunityHeatBand } from "@/lib/opportunity-heat";
 import { cn } from "@/lib/utils";
 
-const MAP_STYLE = "mapbox://styles/mapbox/light-v11";
+const MAP_STYLE = "mapbox://styles/mapbox/light-v10";
 
 function readMapboxAccessToken(): string {
   return (

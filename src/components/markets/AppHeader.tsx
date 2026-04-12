@@ -1,12 +1,18 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Sparkles } from "lucide-react";
 import { InfoTip } from "@/components/ui/info-tip";
+
+type Props = {
+  /** Toolbar actions (e.g. saved list, copy link). */
+  actions?: ReactNode;
+};
 
 /**
  * Top app bar: brand, positioning line, contextual help.
  */
-export function AppHeader() {
+export function AppHeader({ actions }: Props) {
   return (
     <header className="chrome-glass shrink-0">
       <div className="mx-auto flex min-h-14 w-full max-w-[1760px] items-center gap-4 px-4 py-3 sm:min-h-[3.75rem] sm:px-6">
@@ -43,6 +49,9 @@ export function AppHeader() {
             </p>
           </div>
         </div>
+        {actions ? (
+          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">{actions}</div>
+        ) : null}
       </div>
     </header>
   );

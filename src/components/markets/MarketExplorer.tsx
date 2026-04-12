@@ -2,16 +2,14 @@
 
 import { useQuery } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
-import { useCallback, useMemo, useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { InfoTip } from "@/components/ui/info-tip";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { startTransition, useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
+import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useWatchlist } from "@/hooks/use-watchlist";
+import { buildExploreSearchParams, parseExploreUrl } from "@/lib/explore-url";
 import type { SearchMarketsResponse } from "@/lib/schemas/market";
 import { cn } from "@/lib/utils";
 import { AppHeader } from "./AppHeader";
@@ -20,6 +18,8 @@ import { MarketSearchFilters } from "./MarketSearchFilters";
 import { MarketDetailPanel } from "./MarketDetailPanel";
 import { MarketCompareDrawer } from "./MarketCompareDrawer";
 import { RankedMarketsPanel } from "./RankedMarketsPanel";
+import { ShareViewButton } from "./ShareViewButton";
+import { WatchlistOpenButton, WatchlistSheet } from "./WatchlistSheet";
 
 const OpportunityMap = dynamic(
   () =>
@@ -57,26 +57,103 @@ function buildSearchParams(f: FilterValues): URLSearchParams {
 
 type RightTab = "rankings" | "details";
 
+function postMarketSavedFeedback(queryId: string, regionId: string) {
+  void fetch("/api/feedback", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      queryId,
+      regionId,
+      eventType: "market_saved" as const,
+    }),
+  });
+}
+
 /**
  * Viewport-locked explorer: map + tabbed list/detail column.
  */
 export function MarketExplorer() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
   const [filters, setFilters] = useState<FilterValues>(defaultFilters);
-  const [searchKey, setSearchKey] = useState<string | null>(() =>
-    buildSearchParams(defaultFilters).toString()
-  );
+  const [searchKey, setSearchKey] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [compareOpen, setCompareOpen] = useState(false);
   const [rightTab, setRightTab] = useState<RightTab>("rankings");
+  const [watchlistOpen, setWatchlistOpen] = useState(false);
+
+  const {
+    items: watchlistItems,
+    isLoading: watchlistLoading,
+    watchlistBusy,
+    isWatchlisted,
+    add: addWatchlist,
+    remove: removeWatchlist,
+  } = useWatchlist();
+
+  useEffect(() => {
+    const parsed = parseExploreUrl(searchParams);
+    const f: FilterValues = { ...defaultFilters, ...parsed.filters };
+    startTransition(() => {
+      setFilters(f);
+      setSelectedId(parsed.regionId);
+      setRightTab(parsed.tab === "details" ? "details" : "rankings");
+      setSearchKey(buildSearchParams(f).toString());
+    });
+  }, [searchParams]);
+
+  const replaceExploreUrl = useCallback(
+    (override?: {
+      filters?: FilterValues;
+      regionId?: string | null;
+      rightTab?: RightTab;
+    }) => {
+      const f = override?.filters ?? filters;
+      const rid = override?.regionId !== undefined ? override.regionId : selectedId;
+      const tab = override?.rightTab ?? rightTab;
+      const q = buildExploreSearchParams({
+        filters: f,
+        regionId: rid,
+        tab: tab === "rankings" ? "markets" : "details",
+      }).toString();
+      router.replace(q ? `${pathname}?${q}` : pathname, { scroll: false });
+    },
+    [filters, selectedId, rightTab, pathname, router]
+  );
+
+  const sharePath = useMemo(() => {
+    const q = buildExploreSearchParams({
+      filters,
+      regionId: selectedId,
+      tab: rightTab === "rankings" ? "markets" : "details",
+    }).toString();
+    return `${pathname}${q ? `?${q}` : ""}`;
+  }, [filters, selectedId, rightTab, pathname]);
 
   const runSearch = useCallback(() => {
-    setSearchKey(buildSearchParams(filters).toString());
-  }, [filters]);
+    const key = buildSearchParams(filters).toString();
+    setSearchKey(key);
+    replaceExploreUrl({ filters, regionId: selectedId, rightTab });
+  }, [filters, selectedId, rightTab, replaceExploreUrl]);
 
-  const selectRegion = useCallback((regionId: string) => {
-    setSelectedId(regionId);
-    setRightTab("details");
-  }, []);
+  const selectRegion = useCallback(
+    (regionId: string) => {
+      setSelectedId(regionId);
+      setRightTab("details");
+      replaceExploreUrl({ regionId, rightTab: "details" });
+    },
+    [replaceExploreUrl]
+  );
+
+  const setInsightTab = useCallback(
+    (tab: RightTab) => {
+      setRightTab(tab);
+      replaceExploreUrl({ rightTab: tab });
+    },
+    [replaceExploreUrl]
+  );
 
   const searchQuery = useQuery({
     queryKey: ["markets-search", searchKey],
@@ -95,6 +172,27 @@ export function MarketExplorer() {
   const markets = useMemo(() => data?.markets ?? [], [data?.markets]);
   const hidden = data?.hiddenOpportunities ?? [];
   const queryId = data?.queryId ?? null;
+
+  const handleWatchlistToggle = useCallback(async () => {
+    if (!selectedId) return;
+    const saved = watchlistItems.some((i) => i.regionId === selectedId);
+    try {
+      if (saved) {
+        await removeWatchlist(selectedId);
+        toast.success("Removed from saved");
+        return;
+      }
+      await addWatchlist(selectedId);
+      toast.success("Saved for later");
+      if (queryId) {
+        postMarketSavedFeedback(queryId, selectedId);
+      }
+    } catch (e) {
+      toast.error("Couldn’t update saved markets", {
+        description: e instanceof Error ? e.message : "Try again in a moment.",
+      });
+    }
+  }, [selectedId, queryId, addWatchlist, removeWatchlist, watchlistItems]);
 
   const selectedMarket = useMemo(
     () => markets.find((m) => m.regionId === selectedId) ?? null,
@@ -119,16 +217,46 @@ export function MarketExplorer() {
         Without z-index, later DOM siblings (main) paint on top and hide dropdowns.
       */}
       <div className="relative z-[100] isolate shrink-0">
-        <AppHeader />
+        <AppHeader
+          actions={
+            <>
+              <ShareViewButton sharePath={sharePath} />
+              <WatchlistOpenButton
+                count={watchlistItems.length}
+                onClick={() => setWatchlistOpen(true)}
+              />
+            </>
+          }
+        />
         <MarketSearchFilters
           values={filters}
           onChange={setFilters}
           onSubmit={runSearch}
           onReset={() => {
             setFilters(defaultFilters);
+            setSelectedId(null);
+            setRightTab("rankings");
             setSearchKey(buildSearchParams(defaultFilters).toString());
+            router.replace(pathname, { scroll: false });
           }}
           isSearching={searchQuery.isFetching}
+        />
+        <WatchlistSheet
+          items={watchlistItems}
+          isLoading={watchlistLoading}
+          open={watchlistOpen}
+          onOpenChange={setWatchlistOpen}
+          onOpenMarket={selectRegion}
+          onRemove={async (id) => {
+            try {
+              await removeWatchlist(id);
+              toast.success("Removed from saved");
+            } catch (e) {
+              toast.error("Couldn’t remove", {
+                description: e instanceof Error ? e.message : "Try again.",
+              });
+            }
+          }}
         />
       </div>
 
@@ -165,14 +293,12 @@ export function MarketExplorer() {
           )}
         >
           <Card className="panel-elevated shadow-premium flex min-h-0 flex-col overflow-hidden p-0">
-            <CardHeader className="shrink-0 flex flex-row flex-wrap items-center justify-between gap-3 border-b border-border/50 bg-muted/30 px-4 py-3 dark:border-border/40 dark:bg-muted/25">
+            {/* <CardHeader className="shrink-0 flex flex-row flex-wrap items-center justify-between gap-3 border-b border-border/50 bg-muted/30 px-4 py-3 dark:border-border/40 dark:bg-muted/25">
               <div className="min-w-0 space-y-0.5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                   Map
                 </p>
-                <CardTitle className="text-base font-semibold tracking-tight text-foreground">
-                  United States
-                </CardTitle>
+                <CardTitle className="text-base font-semibold tracking-tight text-foreground" />
               </div>
               <InfoTip label="How to read the map" side="left" align="end" className="shrink-0">
                 Each dot is one <span className="font-medium text-background">labor market</span>{" "}
@@ -180,7 +306,7 @@ export function MarketExplorer() {
                 <span className="font-medium text-background">info heat</span> scale (blue → cyan) for
                 relative opportunity with your filters—not volume and not a red/amber alert.
               </InfoTip>
-            </CardHeader>
+            </CardHeader> */}
             <CardContent className="relative z-0 min-h-0 flex-1 bg-muted/25 p-0 dark:bg-muted/15">
               <OpportunityMap
                 markets={mapMarkets}
@@ -209,7 +335,7 @@ export function MarketExplorer() {
                   aria-selected={rightTab === "rankings"}
                   data-state={rightTab === "rankings" ? "active" : "inactive"}
                   className="segmented-trigger"
-                  onClick={() => setRightTab("rankings")}
+                  onClick={() => setInsightTab("rankings")}
                 >
                   Markets
                 </button>
@@ -219,7 +345,7 @@ export function MarketExplorer() {
                   aria-selected={rightTab === "details"}
                   data-state={rightTab === "details" ? "active" : "inactive"}
                   className="segmented-trigger"
-                  onClick={() => setRightTab("details")}
+                  onClick={() => setInsightTab("details")}
                 >
                   Details
                 </button>
@@ -247,9 +373,9 @@ export function MarketExplorer() {
                       specialty={filters.specialty}
                       queryId={queryId}
                       onCompare={() => setCompareOpen(true)}
-                      onSave={() => {
-                        /* feedback handled inside panel */
-                      }}
+                      watchlisted={isWatchlisted(selectedId)}
+                      watchlistBusy={watchlistBusy}
+                      onToggleWatchlist={handleWatchlistToggle}
                       embedded
                     />
                   </div>

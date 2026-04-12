@@ -24,7 +24,10 @@ type Props = {
   specialty: string;
   queryId: string | null;
   onCompare: () => void;
-  onSave: () => void;
+  /** Server-backed watchlist (anonymous session). */
+  watchlisted: boolean;
+  watchlistBusy?: boolean;
+  onToggleWatchlist: () => void | Promise<void>;
   /** Tighter layout inside a scroll region (e.g. Details tab). */
   embedded?: boolean;
 };
@@ -49,7 +52,9 @@ export function MarketDetailPanel({
   specialty,
   queryId,
   onCompare,
-  onSave,
+  watchlisted,
+  watchlistBusy = false,
+  onToggleWatchlist,
   embedded = false,
 }: Props) {
   const detailQuery = useQuery({
@@ -254,20 +259,12 @@ export function MarketDetailPanel({
             <Button
               type="button"
               size="default"
-              variant="outline"
+              variant={watchlisted ? "secondary" : "outline"}
               className="font-medium"
-              onClick={() => {
-                onSave();
-                if (queryId) {
-                  void postFeedback({
-                    queryId,
-                    regionId,
-                    eventType: "market_saved",
-                  });
-                }
-              }}
+              disabled={watchlistBusy}
+              onClick={() => void onToggleWatchlist()}
             >
-              Save for later
+              {watchlisted ? "Saved" : "Save for later"}
             </Button>
           </div>
         </CardContent>
