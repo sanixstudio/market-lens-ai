@@ -219,16 +219,16 @@ export function MarketExplorer() {
       */}
       <div className="relative z-[100] isolate shrink-0">
         <AppHeader
-          actions={
+          primaryActions={
             <>
-              <ShareViewButton sharePath={sharePath} />
               <WatchlistOpenButton
                 count={watchlistItems.length}
                 onClick={() => setWatchlistOpen(true)}
               />
-              <ModeToggle />
+              <ShareViewButton sharePath={sharePath} />
             </>
           }
+          utilityActions={<ModeToggle />}
         />
         <MarketSearchFilters
           values={filters}

@@ -1,18 +1,60 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { SignInButton, useAuth, UserButton } from "@clerk/nextjs";
 import { Sparkles } from "lucide-react";
 import { InfoTip } from "@/components/ui/info-tip";
+import { Separator } from "@/components/ui/separator";
 
 type Props = {
-  /** Toolbar actions (e.g. saved list, copy link). */
-  actions?: ReactNode;
+  /** View tools first: e.g. saved markets, copy link. */
+  primaryActions?: ReactNode;
+  /** App chrome before account: e.g. theme toggle. */
+  utilityActions?: ReactNode;
 };
+
+function ToolbarRule() {
+  return (
+    <Separator
+      orientation="vertical"
+      className="hidden h-6 shrink-0 sm:mx-0.5 sm:block"
+      aria-hidden
+    />
+  );
+}
+
+function HeaderAuth() {
+  const { isLoaded, isSignedIn } = useAuth();
+
+  if (!isLoaded) {
+    return <span className="inline-block h-9 w-20 shrink-0 rounded-lg bg-muted/40" aria-hidden />;
+  }
+
+  if (isSignedIn) {
+    return <UserButton />;
+  }
+
+  return (
+    <SignInButton mode="modal">
+      <button
+        type="button"
+        className="h-9 rounded-lg border border-border/60 bg-background px-3 text-xs font-medium text-foreground shadow-sm transition-colors hover:bg-muted/80 sm:h-10 sm:text-sm dark:border-border/50"
+      >
+        Sign in
+      </button>
+    </SignInButton>
+  );
+}
 
 /**
  * Top app bar: brand, positioning line, contextual help.
  */
-export function AppHeader({ actions }: Props) {
+export function AppHeader({ primaryActions, utilityActions }: Props) {
+  const hasPrimary = primaryActions != null;
+  const hasUtility = utilityActions != null;
+  const showRuleBeforeUtility = hasPrimary && hasUtility;
+  const showRuleBeforeAccount = hasPrimary || hasUtility;
+
   return (
     <header className="chrome-glass shrink-0">
       <div className="mx-auto flex min-h-14 w-full max-w-[1760px] items-center gap-4 px-4 py-3 sm:min-h-[3.75rem] sm:px-6">
@@ -49,9 +91,19 @@ export function AppHeader({ actions }: Props) {
             </p>
           </div>
         </div>
-        {actions ? (
-          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">{actions}</div>
-        ) : null}
+        <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 sm:flex-nowrap sm:items-center sm:gap-0">
+          {hasPrimary ? (
+            <div className="flex flex-wrap items-center justify-end gap-2">{primaryActions}</div>
+          ) : null}
+          {showRuleBeforeUtility ? <ToolbarRule /> : null}
+          {hasUtility ? (
+            <div className="flex flex-wrap items-center justify-end gap-2 sm:px-0.5">{utilityActions}</div>
+          ) : null}
+          {showRuleBeforeAccount ? <ToolbarRule /> : null}
+          <div className="flex items-center sm:pl-0.5">
+            <HeaderAuth />
+          </div>
+        </div>
       </div>
     </header>
   );
