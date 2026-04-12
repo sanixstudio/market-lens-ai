@@ -52,7 +52,7 @@
 /* Light: flagship SaaS canvas — neutral base, indigo accent, crisp surfaces */
 :root {
   /*
-    Stacking: sticky chrome ~100, More popover ~120, select ~300,
+    Stacking: sticky chrome ~100, More popover ~120, select ~420 (above sheet 410),
     tooltips --z-tooltip, sheet backdrop 400, sheet 410.
   */
   --z-tooltip: 380;

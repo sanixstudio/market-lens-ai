@@ -19,6 +19,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { CompareMarketsCharts } from "./CompareMarketsCharts";
 import { formatScore, formatTechPay } from "@/lib/formatters";
 import type { SearchMarketsResponse } from "@/lib/schemas/market";
 import type { CompareMarketsResponse } from "@/lib/schemas/ai-insight";
@@ -82,6 +83,7 @@ export function MarketCompareDrawer({
   const result = compareMutation.data;
   const primaryName =
     markets.find((m) => m.regionId === primaryRegionId)?.regionName ?? null;
+  const otherMarketOptions = markets.filter((m) => m.regionId !== primaryRegionId);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -115,28 +117,36 @@ export function MarketCompareDrawer({
             >
               Compare with
             </Label>
-            <Select
-              value={otherId ?? ""}
-              onValueChange={(v) => {
-                setOtherId(v ? v : null);
-              }}
-            >
-              <SelectTrigger
-                id="compare-with"
-                className="h-9 rounded-lg border-border/50 bg-background dark:border-border/45 dark:bg-input/30"
+            {otherMarketOptions.length === 0 ? (
+              <p className="rounded-lg border border-dashed border-border/50 bg-muted/25 px-3 py-2.5 text-xs text-muted-foreground dark:border-border/40 dark:bg-muted/15">
+                {markets.length === 0
+                  ? "Run a search first so there are markets to compare."
+                  : primaryRegionId
+                    ? "No other markets in this result set. Broaden filters and search again."
+                    : "Select a baseline market, or add more regions with a broader search."}
+              </p>
+            ) : (
+              <Select
+                value={otherId ?? ""}
+                onValueChange={(v) => {
+                  setOtherId(v ? v : null);
+                }}
               >
-                <SelectValue placeholder="Choose a market" />
-              </SelectTrigger>
-              <SelectContent>
-                {markets
-                  .filter((m) => m.regionId !== primaryRegionId)
-                  .map((m) => (
+                <SelectTrigger
+                  id="compare-with"
+                  className="h-9 w-full min-w-0 rounded-lg border-border/50 bg-background dark:border-border/45 dark:bg-input/30"
+                >
+                  <SelectValue placeholder="Choose a market" />
+                </SelectTrigger>
+                <SelectContent>
+                  {otherMarketOptions.map((m) => (
                     <SelectItem key={m.regionId} value={m.regionId}>
                       {m.regionName}
                     </SelectItem>
                   ))}
-              </SelectContent>
-            </Select>
+                </SelectContent>
+              </Select>
+            )}
           </div>
 
           <Button
@@ -157,6 +167,7 @@ export function MarketCompareDrawer({
           {result ? (
             <div className="space-y-4 border-t border-border/60 pt-4">
               <p className="text-sm leading-relaxed text-foreground">{result.summary}</p>
+              <CompareMarketsCharts comparison={result.comparison} />
               <div className="grid gap-3 sm:grid-cols-2">
                 {result.comparison.map((c) => (
                   <Card key={c.regionId} className="overflow-hidden shadow-sm">

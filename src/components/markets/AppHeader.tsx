@@ -47,7 +47,8 @@ function HeaderAuth() {
 }
 
 /**
- * Top app bar: brand, positioning line, contextual help.
+ * Top app bar: brand (left); toolbar on the right in order
+ * **Saved → Copy link** | **theme** | **account** (with rules between groups).
  */
 export function AppHeader({ primaryActions, utilityActions }: Props) {
   const hasPrimary = primaryActions != null;
