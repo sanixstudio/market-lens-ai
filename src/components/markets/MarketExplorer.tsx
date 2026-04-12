@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useOpenSignInModal } from "@/components/auth/sign-in-modal-context";
 import { useWatchlist } from "@/hooks/use-watchlist";
 import { buildExploreSearchParams, parseExploreUrl } from "@/lib/explore-url";
+import { setPendingWatchlistRegion } from "@/lib/pending-watchlist-save";
 import type { SearchMarketsResponse } from "@/lib/schemas/market";
 import { ModeToggle } from "@/components/mode-toggle";
 import { cn } from "@/lib/utils";
@@ -87,15 +88,6 @@ export function MarketExplorer() {
   const [watchlistOpen, setWatchlistOpen] = useState(false);
 
   const openSignInModal = useOpenSignInModal();
-  const {
-    items: watchlistItems,
-    isLoading: watchlistLoading,
-    watchlistBusy,
-    isSignedInWatchlist,
-    isWatchlisted,
-    add: addWatchlist,
-    remove: removeWatchlist,
-  } = useWatchlist();
 
   useEffect(() => {
     const parsed = parseExploreUrl(searchParams);
@@ -177,11 +169,31 @@ export function MarketExplorer() {
   const hidden = data?.hiddenOpportunities ?? [];
   const queryId = data?.queryId ?? null;
 
+  const onPendingWatchlistSaveFlushed = useCallback(
+    (regionId: string) => {
+      if (queryId) {
+        postMarketSavedFeedback(queryId, regionId);
+      }
+    },
+    [queryId]
+  );
+
+  const {
+    items: watchlistItems,
+    isLoading: watchlistLoading,
+    watchlistBusy,
+    isSignedInWatchlist,
+    isWatchlisted,
+    add: addWatchlist,
+    remove: removeWatchlist,
+  } = useWatchlist({ onPendingSaveFlushed: onPendingWatchlistSaveFlushed });
+
   const handleWatchlistToggle = useCallback(async () => {
     if (!selectedId) return;
     if (!isSignedInWatchlist) {
-      toast.info("Sign in to save markets", {
-        description: "Your saved list is tied to your account.",
+      setPendingWatchlistRegion(selectedId);
+      toast.info("Finish signing in to save", {
+        description: "We’ll add this market to Saved as soon as you’re signed in.",
       });
       openSignInModal();
       return;
@@ -200,7 +212,10 @@ export function MarketExplorer() {
       }
     } catch (e) {
       if (e instanceof Error && e.message === "SIGN_IN_REQUIRED") {
-        toast.info("Sign in to save markets");
+        setPendingWatchlistRegion(selectedId);
+        toast.info("Sign in again to save", {
+          description: "Your session may have expired—we’ll save this market after you sign in.",
+        });
         openSignInModal();
         return;
       }

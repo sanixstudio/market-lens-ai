@@ -2,6 +2,12 @@
 
 import { useAuth } from "@clerk/nextjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
+import { toast } from "sonner";
+import {
+  clearPendingWatchlistRegion,
+  peekPendingWatchlistRegion,
+} from "@/lib/pending-watchlist-save";
 
 export type WatchlistRow = {
   regionId: string;
@@ -41,13 +47,22 @@ async function deleteWatchlist(regionId: string): Promise<void> {
   if (!res.ok) throw new Error("Remove failed");
 }
 
+export type UseWatchlistOptions = {
+  /** Called after a deferred save (post sign-in) succeeds. */
+  onPendingSaveFlushed?: (regionId: string) => void;
+};
+
 /**
  * Clerk-scoped saved markets. Reads/writes only when `userId` is present; otherwise `items` is empty.
+ * Flushes `sessionStorage` pending region once the user is signed in.
  */
-export function useWatchlist() {
+export function useWatchlist(options?: UseWatchlistOptions) {
   const queryClient = useQueryClient();
   const { isLoaded, userId } = useAuth();
   const enabled = isLoaded && !!userId;
+  const onPendingSaveFlushedRef = useRef(options?.onPendingSaveFlushed);
+  onPendingSaveFlushedRef.current = options?.onPendingSaveFlushed;
+  const flushInFlightRef = useRef(false);
 
   const listQuery = useQuery({
     queryKey: ["watchlist", userId],
@@ -68,6 +83,41 @@ export function useWatchlist() {
       void queryClient.invalidateQueries({ queryKey: ["watchlist", userId] });
     },
   });
+
+  useEffect(() => {
+    if (!isLoaded || !userId) return;
+    const regionId = peekPendingWatchlistRegion();
+    if (!regionId || flushInFlightRef.current) return;
+
+    flushInFlightRef.current = true;
+    let cancelled = false;
+
+    void (async () => {
+      try {
+        await postWatchlist(regionId);
+        if (cancelled) return;
+        clearPendingWatchlistRegion();
+        await queryClient.invalidateQueries({ queryKey: ["watchlist", userId] });
+        toast.success("Saved for later", {
+          description: "Added after you signed in.",
+        });
+        onPendingSaveFlushedRef.current?.(regionId);
+      } catch (e) {
+        if (cancelled) return;
+        const msg = e instanceof Error ? e.message : "Save failed";
+        toast.error("Couldn’t save your market", {
+          description: msg === "SIGN_IN_REQUIRED" ? "Please sign in again." : msg,
+        });
+      } finally {
+        flushInFlightRef.current = false;
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      flushInFlightRef.current = false;
+    };
+  }, [isLoaded, userId, queryClient]);
 
   const items = userId ? (listQuery.data ?? []) : [];
   const ids = new Set(items.map((i) => i.regionId));

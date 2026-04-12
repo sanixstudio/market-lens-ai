@@ -7,17 +7,30 @@ import {
   listWatchlistForClerkUser,
   removeWatchlistItemForClerkUser,
 } from "@/lib/repositories/watchlist.repository";
-import { isRelationUndefined } from "@/lib/postgres-error";
+import {
+  isRelationUndefined,
+  isWatchlistSchemaDrift,
+} from "@/lib/postgres-error";
 import { watchlistPostSchema } from "@/lib/schemas/watchlist";
 
 export const runtime = "nodejs";
+
+const WATCHLIST_MIGRATE_HINT =
+  "Apply the latest migrations from the project root: npm run db:migrate (requires migration 0003_watchlist_clerk_user for Clerk-backed saves).";
 
 function watchlistFailureResponse(error: unknown) {
   if (isRelationUndefined(error)) {
     return NextResponse.json(
       {
-        error:
-          "Watchlist table is missing. Apply migrations: npm run db:migrate (or drizzle-kit migrate).",
+        error: `Watchlist table is missing. ${WATCHLIST_MIGRATE_HINT}`,
+      },
+      { status: 503 }
+    );
+  }
+  if (isWatchlistSchemaDrift(error)) {
+    return NextResponse.json(
+      {
+        error: `Watchlist database schema is out of date (missing clerk_user_id or anon_key is still required). ${WATCHLIST_MIGRATE_HINT}`,
       },
       { status: 503 }
     );
