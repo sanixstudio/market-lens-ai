@@ -12,6 +12,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatScore, formatTechPay } from "@/lib/formatters";
 import type { SearchMarketsResponse } from "@/lib/schemas/market";
+import { InfoTip } from "@/components/ui/info-tip";
 import { cn } from "@/lib/utils";
 import { ConfidenceBadge } from "./ConfidenceBadge";
 
@@ -191,8 +192,15 @@ export function RankedMarketsPanel({
   if (variant === "panel") {
     return (
       <div className={cn("flex h-full min-h-0 flex-col overflow-hidden", className)}>
-        <div className="shrink-0 border-b border-border/40 bg-muted/30 px-3 py-2 text-[11px] font-medium text-muted-foreground dark:border-border/35">
-          {specialty} · {markets.length} market{markets.length === 1 ? "" : "s"}
+        <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border/40 bg-muted/30 px-3 py-2 dark:border-border/35">
+          <p className="min-w-0 flex-1 text-[11px] font-medium text-muted-foreground">
+            {specialty} · {markets.length} market{markets.length === 1 ? "" : "s"}
+          </p>
+          <InfoTip label="Using the market list" side="bottom" align="end" className="shrink-0">
+            Tap a row to select that market and jump to the{" "}
+            <span className="font-medium text-background">Details</span> tab for pay bands, demand
+            signals, sample roles, and AI commentary when enabled.
+          </InfoTip>
         </div>
         <ScrollArea className="min-h-0 flex-1 overflow-hidden">
           <ListBody
@@ -212,11 +220,17 @@ export function RankedMarketsPanel({
         className
       )}
     >
-      <CardHeader className="shrink-0 space-y-0 border-b border-border/50 bg-muted/15 py-2.5 dark:bg-muted/10">
-        <CardTitle className="text-sm font-semibold">Rankings</CardTitle>
-        <CardDescription className="text-[11px]">
-          {specialty} · {markets.length} region{markets.length === 1 ? "" : "s"}
-        </CardDescription>
+      <CardHeader className="shrink-0 flex flex-row flex-wrap items-center justify-between gap-2 border-b border-border/50 bg-muted/15 py-2.5 dark:bg-muted/10">
+        <div className="min-w-0 space-y-0.5">
+          <CardTitle className="text-sm font-semibold">Markets</CardTitle>
+          <CardDescription className="text-[11px] leading-snug">
+            {specialty} · {markets.length} market{markets.length === 1 ? "" : "s"}
+          </CardDescription>
+        </div>
+        <InfoTip label="Using the market list" side="left" align="start" className="shrink-0">
+          Ranked <span className="font-medium text-background">labor markets</span> for your search.
+          Select one to load the Details tab with metrics, listings, and optional AI insight.
+        </InfoTip>
       </CardHeader>
       <CardContent className="flex min-h-0 flex-1 flex-col p-0">
         <ScrollArea className="h-0 min-h-[200px] flex-1">

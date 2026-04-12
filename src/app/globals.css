@@ -51,6 +51,11 @@
 
 /* Light: cool slate field, white surfaces, deep indigo accent (high contrast vs old near-white) */
 :root {
+  /*
+    Stacking: sticky chrome ~100, More popover ~120, select ~300,
+    tooltips --z-tooltip, sheet backdrop 400, sheet 410.
+  */
+  --z-tooltip: 380;
   --background: oklch(0.928 0.024 265);
   --foreground: oklch(0.2 0.04 265);
   --card: oklch(1 0 0);

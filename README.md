@@ -41,6 +41,8 @@ Tech job market intelligence: search and rank regions by role, explore markets o
    npm run db:seed
    ```
 
+   Optional: `SEED_SCALE` controls how many synthetic listings are generated per region/specialty (default `6`, max `40`). Example: `SEED_SCALE=10 npm run db:seed`.
+
    If migration fails on `jobs` / `source_id` uniqueness, run `npm run db:repair-jobs` once, then migrate again.
 
 4. **Map (optional)**

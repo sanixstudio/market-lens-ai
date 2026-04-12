@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { InfoTip } from "@/components/ui/info-tip";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { SearchMarketsResponse } from "@/lib/schemas/market";
@@ -131,7 +132,15 @@ export function MarketExplorer() {
         />
       </div>
 
-      <main className="relative z-0 mx-auto flex min-h-0 w-full max-w-[1600px] flex-1 flex-col gap-2 overflow-hidden px-3 pb-2 pt-2 sm:px-4 sm:pb-3 sm:pt-2 lg:gap-3">
+      <main
+        className="relative z-0 mx-auto flex min-h-0 w-full max-w-[1600px] flex-1 flex-col gap-2 overflow-hidden px-3 pb-2 pt-2 sm:px-4 sm:pb-3 sm:pt-2 lg:gap-3"
+        aria-describedby="explorer-flow-summary"
+      >
+        <p id="explorer-flow-summary" className="sr-only">
+          Results are labor markets such as metros or remote regions. The map shows one marker per
+          market. Use the Markets list or map to select a region, then open the Details tab for
+          metrics and listings.
+        </p>
         {searchQuery.isError ? (
           <div
             role="alert"
@@ -156,10 +165,15 @@ export function MarketExplorer() {
           )}
         >
           <Card className="panel-elevated shadow-sm flex min-h-0 flex-col overflow-hidden p-0">
-            <CardHeader className="shrink-0 space-y-0 border-b border-border/40 bg-muted/25 py-2 pl-3 pr-3 dark:border-border/35 dark:bg-muted/20">
-              <CardTitle className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                Map
+            <CardHeader className="shrink-0 flex flex-row flex-wrap items-center justify-between gap-2 border-b border-border/40 bg-muted/25 py-2.5 pl-3 pr-2 sm:pr-3 dark:border-border/35 dark:bg-muted/20">
+              <CardTitle className="text-xs font-semibold text-foreground sm:text-sm">
+                Markets map
               </CardTitle>
+              <InfoTip label="How to read the map" side="left" align="start" className="shrink-0">
+                Each dot is one <span className="font-medium text-background">labor market</span>{" "}
+                (metro or remote bucket), not one job post. Color encodes opportunity score for your
+                current filters—not posting volume.
+              </InfoTip>
             </CardHeader>
             <CardContent className="relative z-0 min-h-0 flex-1 bg-muted/30 p-0 dark:bg-muted/20">
               <OpportunityMap
@@ -174,7 +188,7 @@ export function MarketExplorer() {
             <div
               className="flex shrink-0 gap-0.5 border-b border-border/40 bg-muted/40 p-1 dark:border-border/35 dark:bg-muted/25"
               role="tablist"
-              aria-label="Results"
+              aria-label="Markets list and details"
             >
               <button
                 type="button"
@@ -188,7 +202,7 @@ export function MarketExplorer() {
                 )}
                 onClick={() => setRightTab("rankings")}
               >
-                Rankings
+                Markets
               </button>
               <button
                 type="button"

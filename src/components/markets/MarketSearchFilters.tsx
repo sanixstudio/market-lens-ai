@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { InfoTip } from "@/components/ui/info-tip";
 import { cn } from "@/lib/utils";
 import type { CompetitionPreference } from "@/lib/schemas/market";
 
@@ -62,11 +63,22 @@ export function MarketSearchFilters({
 
   return (
     <div className="filter-well shrink-0">
-      <div className="mx-auto max-w-[1600px] px-3 py-2.5 sm:px-4 sm:py-3">
-        <div className="flex flex-wrap items-end gap-2 sm:gap-3">
+      <div className="mx-auto max-w-[1600px] px-3 pt-2.5 sm:px-4 sm:pt-3">
+        <div className="flex flex-wrap items-end gap-2 pb-2.5 sm:gap-3 sm:pb-3">
+          <div className="flex shrink-0 items-center pb-1 sm:pb-1.5">
+            <InfoTip label="How search works" side="bottom" align="start">
+              Results are <span className="font-medium text-background">labor markets</span> (metros
+              or remote regions), not single job listings. Adjust role, pay floor, and states, then
+              run Search. Choose a market on the map or in the list and open the Details tab for pay,
+              demand, sample roles, and optional AI summary.
+            </InfoTip>
+          </div>
           <div className="w-[min(100%,11rem)] shrink-0 sm:w-44">
-            <Label htmlFor="specialty" className="sr-only">
-              Role
+            <Label
+              htmlFor="specialty"
+              className="mb-1 block text-[10px] font-medium text-muted-foreground sm:text-xs"
+            >
+              Role track
             </Label>
             <Select
               value={values.specialty}
@@ -91,8 +103,11 @@ export function MarketSearchFilters({
           </div>
 
           <div className="w-24 shrink-0 sm:w-28">
-            <Label htmlFor="minPay" className="sr-only">
-              Min annual salary
+            <Label
+              htmlFor="minPay"
+              className="mb-1 block text-[10px] font-medium text-muted-foreground sm:text-xs"
+            >
+              Min $/yr
             </Label>
             <Input
               id="minPay"
@@ -108,8 +123,12 @@ export function MarketSearchFilters({
           </div>
 
           <div className="min-w-24 flex-1 sm:max-w-40">
-            <Label htmlFor="states" className="sr-only">
-              States
+            <Label
+              htmlFor="states"
+              className="mb-1 block text-[10px] font-medium text-muted-foreground sm:text-xs"
+            >
+              States{" "}
+              <span className="font-normal opacity-80">(optional)</span>
             </Label>
             <Input
               id="states"

@@ -21,6 +21,7 @@ import Map, {
   type MapRef,
 } from "react-map-gl/mapbox";
 import type { LngLatBoundsLike, Map as MapboxMap, MapEvent } from "mapbox-gl";
+import { InfoTip } from "@/components/ui/info-tip";
 
 const MAP_STYLE = "mapbox://styles/mapbox/light-v11";
 
@@ -224,27 +225,37 @@ export function OpportunityMap({ markets, selectedId, onSelect }: Props) {
           );
         })}
       </Map>
-      <div
-        className="pointer-events-none absolute bottom-3 left-3 z-20 max-w-40 rounded-lg border border-border/40 bg-card px-3 py-2 text-[10px] leading-tight shadow-sm dark:border-border/40"
-        aria-hidden
-      >
-        <p className="mb-2 font-heading text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-          Score
-        </p>
-        <ul className="space-y-1 text-muted-foreground">
-          <li className="flex items-center gap-1.5">
-            <span className="size-2.5 shrink-0 rounded-full bg-emerald-600 ring-1 ring-black/10" />
-            Strong
-          </li>
-          <li className="flex items-center gap-1.5">
-            <span className="size-2.5 shrink-0 rounded-full bg-amber-500 ring-1 ring-black/10" />
-            Medium
-          </li>
-          <li className="flex items-center gap-1.5">
-            <span className="size-2.5 shrink-0 rounded-full bg-slate-400 ring-1 ring-black/10" />
-            Lower
-          </li>
-        </ul>
+      <div className="pointer-events-none absolute bottom-3 left-3 z-20">
+        <div className="pointer-events-auto max-w-[11.5rem] rounded-lg border border-border/40 bg-card px-2.5 py-2 text-[10px] leading-tight shadow-sm dark:border-border/40">
+          <div className="mb-2 flex items-center justify-between gap-1">
+            <p className="font-heading text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+              Score
+            </p>
+            <InfoTip
+              label="Markers vs job posts"
+              side="top"
+              align="end"
+              className="size-6 text-muted-foreground"
+            >
+              Every marker is one <span className="font-medium text-background">labor market</span>,
+              not an individual role. Colors map to opportunity score for your current search.
+            </InfoTip>
+          </div>
+          <ul className="space-y-1 text-muted-foreground" aria-label="Opportunity score legend">
+            <li className="flex items-center gap-1.5">
+              <span className="size-2.5 shrink-0 rounded-full bg-emerald-600 ring-1 ring-black/10" />
+              Strong
+            </li>
+            <li className="flex items-center gap-1.5">
+              <span className="size-2.5 shrink-0 rounded-full bg-amber-500 ring-1 ring-black/10" />
+              Medium
+            </li>
+            <li className="flex items-center gap-1.5">
+              <span className="size-2.5 shrink-0 rounded-full bg-slate-400 ring-1 ring-black/10" />
+              Lower
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   );

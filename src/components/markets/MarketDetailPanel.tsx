@@ -13,6 +13,7 @@ import {
 import { formatScore, formatTechPay } from "@/lib/formatters";
 import type { MarketDetailResponse } from "@/lib/schemas/market";
 import type { ExplainMarketResponse } from "@/lib/schemas/ai-insight";
+import { InfoTip } from "@/components/ui/info-tip";
 import { cn } from "@/lib/utils";
 import { ConfidenceBadge } from "./ConfidenceBadge";
 import { MarketExplanationCard } from "./MarketExplanationCard";
@@ -91,10 +92,17 @@ export function MarketDetailPanel({
           cardRadius
         )}
       >
-        <CardHeader className="space-y-0 pb-2 pt-3">
-          <CardTitle className="text-sm font-semibold">Details</CardTitle>
-          <CardDescription className="text-xs">
-            Select a region on the map or in Rankings.
+        <CardHeader className="space-y-2 pb-3 pt-4">
+          <div className="flex items-center gap-1.5">
+            <CardTitle className="text-sm font-semibold">Details</CardTitle>
+            <InfoTip label="Why Details is empty" side="bottom" align="start" className="size-6">
+              Details applies to a whole <span className="font-medium text-background">market</span>{" "}
+              (metro or remote region), not one job. Select a dot on the map or a row under Markets,
+              then switch back here for pay, activity, samples, and AI when configured.
+            </InfoTip>
+          </div>
+          <CardDescription className="text-xs leading-relaxed">
+            Select a market from the map or the Markets tab.
           </CardDescription>
         </CardHeader>
       </Card>
