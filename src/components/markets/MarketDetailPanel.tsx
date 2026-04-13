@@ -44,6 +44,25 @@ async function postFeedback(body: {
   });
 }
 
+function confidenceLabel(score: number): string {
+  if (score >= 0.75) return "High confidence";
+  if (score >= 0.45) return "Moderate confidence";
+  return "Low confidence";
+}
+
+function decisionSummary(score: number, activeJobs: number): string {
+  if (score >= 0.75) {
+    return "Strong candidate market for immediate outreach and targeted applications.";
+  }
+  if (score >= 0.6) {
+    return "Promising market with balanced upside—worth shortlisting and comparing.";
+  }
+  if (activeJobs >= 20) {
+    return "Exploratory market with enough activity to monitor and sample opportunities.";
+  }
+  return "Directional market signal only; compare alternatives before prioritizing.";
+}
+
 /**
  * Selected region: metrics, actions, AI narrative, and sample job rows.
  */
@@ -151,6 +170,8 @@ export function MarketDetailPanel({
   const hasRemotiveSamples = d.sampleJobs.some((j) =>
     j.listingUrl?.includes("remotive.com")
   );
+  const confidenceText = confidenceLabel(d.metrics.confidenceScore);
+  const summaryText = decisionSummary(d.metrics.opportunityScore, d.metrics.activeJobs);
 
   const contentPad = embedded ? "space-y-3 pt-3" : "space-y-4 pt-4";
   const headerPad = embedded ? "pb-2.5 pt-3" : "pb-3.5";
@@ -193,6 +214,43 @@ export function MarketDetailPanel({
           ) : null}
         </CardHeader>
         <CardContent className={cn("text-sm", contentPad)}>
+          <div className="rounded-xl border border-border/45 bg-card/80 p-3 dark:border-border/40 dark:bg-card/65">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+              Decision summary
+            </p>
+            <p className="mt-1.5 text-sm leading-relaxed text-foreground">{summaryText}</p>
+            <p className="mt-2 text-xs text-muted-foreground">
+              {confidenceText}: score {formatScore(d.metrics.confidenceScore)}.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2.5">
+            <Button
+              type="button"
+              size="default"
+              variant="default"
+              className="font-semibold shadow-sm"
+              onClick={onCompare}
+            >
+              Compare
+            </Button>
+            <Button
+              type="button"
+              size="default"
+              variant={watchlisted ? "secondary" : "outline"}
+              className="gap-2 font-medium"
+              disabled={watchlistBusy}
+              onClick={() => void onToggleWatchlist()}
+            >
+              {watchlisted ? (
+                <>
+                  <Check className="size-4 shrink-0" strokeWidth={2.5} aria-hidden />
+                  Saved
+                </>
+              ) : (
+                "Save for later"
+              )}
+            </Button>
+          </div>
           <div
             className={cn(
               "grid grid-cols-2 gap-3 rounded-xl border border-border/45 bg-muted/30 p-3.5 sm:grid-cols-3 dark:border-border/40 dark:bg-muted/20",
@@ -245,34 +303,6 @@ export function MarketDetailPanel({
                   : "—"}
               </p>
             </div>
-          </div>
-          <div className="flex flex-wrap gap-2.5">
-            <Button
-              type="button"
-              size="default"
-              variant="default"
-              className="font-semibold shadow-sm"
-              onClick={onCompare}
-            >
-              Compare
-            </Button>
-            <Button
-              type="button"
-              size="default"
-              variant={watchlisted ? "secondary" : "outline"}
-              className="gap-2 font-medium"
-              disabled={watchlistBusy}
-              onClick={() => void onToggleWatchlist()}
-            >
-              {watchlisted ? (
-                <>
-                  <Check className="size-4 shrink-0" strokeWidth={2.5} aria-hidden />
-                  Saved
-                </>
-              ) : (
-                "Save for later"
-              )}
-            </Button>
           </div>
         </CardContent>
       </Card>

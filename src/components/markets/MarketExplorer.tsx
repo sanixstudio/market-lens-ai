@@ -324,6 +324,11 @@ export function MarketExplorer() {
           market. Use the Markets list or map to select a region, then open the Details tab for
           metrics and listings.
         </p>
+        {/* <p className="shrink-0 text-xs text-muted-foreground sm:text-sm">
+          Ranked labor markets for{" "}
+          <span className="font-medium text-foreground">{filters.specialty}</span> using compensation,
+          listing demand, freshness, and data confidence.
+        </p> */}
         {searchQuery.isError ? (
           <div
             role="alert"

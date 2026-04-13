@@ -63,11 +63,13 @@ function ListBody({
 }: {
   markets: MarketItem[];
   hiddenOpportunities: MarketItem[];
-  renderCard: (m: MarketItem, opts?: { hidden?: boolean }) => ReactNode;
+  renderCard: (m: MarketItem, opts?: { hidden?: boolean; rank?: number }) => ReactNode;
 }) {
   return (
     <div className="space-y-4 px-3 pb-4 pt-1 sm:px-4">
-      <div className="flex flex-col gap-2.5">{markets.map((m) => renderCard(m))}</div>
+      <div className="flex flex-col gap-2.5">
+        {markets.map((m, idx) => renderCard(m, { rank: idx + 1 }))}
+      </div>
       {hiddenOpportunities.length > 0 ? (
         <div className="border-t border-border/50 pt-3">
           <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
@@ -194,8 +196,9 @@ export function RankedMarketsPanel({
     }
   }, [page]);
 
-  const renderCard = (m: MarketItem, opts?: { hidden?: boolean }) => {
+  const renderCard = (m: MarketItem, opts?: { hidden?: boolean; rank?: number }) => {
     const heat = opportunityHeatBand(m.opportunityScore);
+    const bestFor = m.topFactors[0] ?? "Balanced market fundamentals";
     return (
     <button
       key={opts?.hidden ? `hidden-${m.regionId}` : m.regionId}
@@ -220,9 +223,21 @@ export function RankedMarketsPanel({
     >
       <div className="p-3 sm:p-3.5">
         <div className="flex items-start justify-between gap-3">
-          <p className="font-heading text-[0.9375rem] font-semibold leading-snug text-foreground">
-            {m.regionName}
-          </p>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              {opts?.rank ? (
+                <span className="rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-muted-foreground">
+                  #{opts.rank}
+                </span>
+              ) : null}
+              <p className="truncate font-heading text-[0.9375rem] font-semibold leading-snug text-foreground">
+                {m.regionName}
+              </p>
+            </div>
+            <p className="mt-1 truncate text-[11px] text-muted-foreground">
+              Best for: <span className="text-foreground/85">{bestFor}</span>
+            </p>
+          </div>
           <span
             className={cn(
               "shrink-0 rounded-full px-2.5 py-0.5 font-mono text-[11px] font-semibold tabular-nums",

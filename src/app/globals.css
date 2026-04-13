@@ -186,6 +186,23 @@
     @apply text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground sm:text-xs sm:tracking-[0.06em];
   }
 
+  /** Semantic surface and typography utilities for consistent UI decisions. */
+  .surface-base {
+    @apply bg-background text-foreground;
+  }
+  .surface-raised {
+    @apply rounded-xl border border-border/50 bg-card shadow-sm dark:border-border/45;
+  }
+  .surface-overlay {
+    @apply rounded-xl border border-border/55 bg-popover/95 shadow-md backdrop-blur-md dark:border-border/45;
+  }
+  .text-primary-strong {
+    @apply text-foreground;
+  }
+  .text-secondary-muted {
+    @apply text-muted-foreground;
+  }
+
   /** Filter strip under app header */
   .filter-well {
     @apply border-b border-border/55 bg-gradient-to-b from-card/98 to-card/88 shadow-[0_1px_0_oklch(0_0_0/4%)] backdrop-blur-xl backdrop-saturate-150 dark:border-border/50 dark:from-card/92 dark:to-card/80 dark:shadow-[0_1px_0_oklch(1_1_1/5%)];
