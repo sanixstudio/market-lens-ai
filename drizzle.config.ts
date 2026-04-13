@@ -5,17 +5,18 @@
  * Then use `npm run db:push` to align the live schema with schema.ts (adds watchlist, etc.).
  */
 import { config } from "dotenv";
-import { defineConfig } from "drizzle-kit";
 import { resolve } from "node:path";
 
 config({ path: resolve(process.cwd(), ".env.local") });
 config({ path: resolve(process.cwd(), ".env") });
 
-export default defineConfig({
+const drizzleConfig = {
   schema: "./src/lib/db/schema.ts",
   out: "./drizzle",
   dialect: "postgresql",
   dbCredentials: {
     url: process.env.DATABASE_URL!,
   },
-});
+};
+
+export default drizzleConfig;
