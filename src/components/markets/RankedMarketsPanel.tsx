@@ -200,73 +200,91 @@ export function RankedMarketsPanel({
     const heat = opportunityHeatBand(m.opportunityScore);
     const bestFor = m.topFactors[0] ?? "Balanced market fundamentals";
     return (
-    <button
-      key={opts?.hidden ? `hidden-${m.regionId}` : m.regionId}
-      type="button"
-      onClick={() => {
-        onSelect(m);
-        if (queryId) {
-          void postFeedback({
-            queryId,
-            regionId: m.regionId,
-            eventType: "recommendation_clicked",
-          });
-        }
-      }}
-      className={cn(
-        "group w-full rounded-2xl border border-border/50 bg-card text-left shadow-sm ring-1 ring-black/[0.02] transition-[border-color,background-color,box-shadow,transform] duration-200 dark:ring-white/[0.03]",
-        "hover:-translate-y-px hover:border-border/85 hover:bg-muted/30 hover:shadow-premium dark:border-border/42 dark:hover:bg-muted/25",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
-        selectedId === m.regionId &&
-          "border-primary/50 bg-gradient-to-br from-primary/[0.09] to-primary/[0.04] shadow-md ring-1 ring-primary/20 dark:border-primary/55 dark:from-primary/[0.14] dark:to-primary/[0.06] dark:ring-primary/25"
-      )}
-    >
-      <div className="p-3 sm:p-3.5">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              {opts?.rank ? (
-                <span className="rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-muted-foreground">
-                  #{opts.rank}
-                </span>
-              ) : null}
-              <p className="truncate font-heading text-[0.9375rem] font-semibold leading-snug text-foreground">
-                {m.regionName}
+      <button
+        key={opts?.hidden ? `hidden-${m.regionId}` : m.regionId}
+        type="button"
+        aria-pressed={selectedId === m.regionId}
+        onClick={() => {
+          onSelect(m);
+          if (queryId) {
+            void postFeedback({
+              queryId,
+              regionId: m.regionId,
+              eventType: "recommendation_clicked",
+            });
+          }
+        }}
+        className={cn(
+          "group w-full rounded-2xl border border-border/50 bg-card text-left shadow-sm ring-1 ring-black/[0.02] transition-[border-color,background-color,box-shadow,transform] duration-200 dark:ring-white/[0.03]",
+          "hover:-translate-y-px hover:border-border/85 hover:bg-muted/30 hover:shadow-premium dark:border-border/42 dark:hover:bg-muted/25",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
+          selectedId === m.regionId &&
+            "border-primary/50 bg-gradient-to-br from-primary/[0.09] to-primary/[0.04] shadow-md ring-1 ring-primary/20 dark:border-primary/55 dark:from-primary/[0.14] dark:to-primary/[0.06] dark:ring-primary/25"
+        )}
+      >
+        <div className="p-3 sm:p-3.5">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                {opts?.rank ? (
+                  <span className="rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-muted-foreground">
+                    #{opts.rank}
+                  </span>
+                ) : null}
+                <p className="truncate font-heading text-[0.9375rem] font-semibold leading-snug text-foreground">
+                  {m.regionName}
+                </p>
+                {m.state ? (
+                  <span className="rounded-md border border-border/50 bg-muted/35 px-1.5 py-0.5 text-[10px] font-medium uppercase text-muted-foreground">
+                    {m.state}
+                  </span>
+                ) : null}
+              </div>
+              <p className="mt-1 truncate text-[11px] text-muted-foreground">
+                Best for: <span className="text-foreground/85">{bestFor}</span>
               </p>
             </div>
-            <p className="mt-1 truncate text-[11px] text-muted-foreground">
-              Best for: <span className="text-foreground/85">{bestFor}</span>
-            </p>
+            <div className="shrink-0 text-right">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+                Score
+              </p>
+              <span
+                className={cn(
+                  "mt-0.5 inline-flex rounded-full px-2.5 py-0.5 font-mono text-[11px] font-semibold tabular-nums",
+                  heatPillClass[heat]
+                )}
+              >
+                {formatScore(m.opportunityScore)}
+              </span>
+            </div>
           </div>
-          <span
-            className={cn(
-              "shrink-0 rounded-full px-2.5 py-0.5 font-mono text-[11px] font-semibold tabular-nums",
-              heatPillClass[heat]
-            )}
-          >
-            {formatScore(m.opportunityScore)}
-          </span>
+          <div className="mt-2 flex flex-wrap items-center gap-1.5">
+            <ConfidenceBadge score={m.confidenceScore} />
+            {opts?.hidden ? (
+              <span className="rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-medium text-amber-950 dark:text-amber-100">
+                Alt pick
+              </span>
+            ) : null}
+          </div>
+          <div className="mt-2 grid grid-cols-2 gap-1.5 text-[11px]">
+            <div className="rounded-md border border-border/45 bg-muted/25 px-2 py-1">
+              <p className="uppercase tracking-[0.08em] text-muted-foreground">Median</p>
+              <p className="font-medium text-foreground">{formatTechPay(m.medianPay)}</p>
+            </div>
+            <div className="rounded-md border border-border/45 bg-muted/25 px-2 py-1">
+              <p className="uppercase tracking-[0.08em] text-muted-foreground">Open roles</p>
+              <p className="font-medium tabular-nums text-foreground">{m.activeJobs}</p>
+            </div>
+          </div>
+          <ul className="mt-2 space-y-0.5 border-t border-border/40 pt-1.5 text-[11px] text-muted-foreground">
+            {m.topFactors.slice(0, 2).map((f) => (
+              <li key={f} className="truncate">
+                {f}
+              </li>
+            ))}
+          </ul>
         </div>
-        <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-          <ConfidenceBadge score={m.confidenceScore} />
-          {opts?.hidden ? (
-            <span className="rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-medium text-amber-950 dark:text-amber-100">
-              Alt pick
-            </span>
-          ) : null}
-        </div>
-        <p className="mt-1.5 text-[11px] text-muted-foreground">
-          {formatTechPay(m.medianPay)} median · {m.activeJobs} roles
-        </p>
-        <ul className="mt-1.5 space-y-0.5 border-t border-border/40 pt-1.5 text-[11px] text-muted-foreground">
-          {m.topFactors.slice(0, 2).map((f) => (
-            <li key={f} className="truncate">
-              {f}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </button>
+      </button>
     );
   };
 
