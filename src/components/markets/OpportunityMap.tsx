@@ -223,7 +223,7 @@ export function OpportunityMap({ markets, selectedId, onSelect }: Props) {
                 type="button"
                 title={m.regionName}
                 className={cn(
-                  "h-[0.95rem] w-[0.95rem] rounded-full border border-white shadow-md ring-1 ring-black/15 transition-transform hover:scale-[1.2] sm:h-4 sm:w-4",
+                  "h-[0.95rem] w-[0.95rem] rounded-full border border-white/75 shadow-md ring-1 ring-black/12 transition-transform hover:scale-[1.2] sm:h-4 sm:w-4",
                   heatMarkerClass[opportunityHeatBand(m.opportunityScore)],
                   selected && "scale-125 ring-2 ring-primary/90 shadow-lg"
                 )}
@@ -233,7 +233,7 @@ export function OpportunityMap({ markets, selectedId, onSelect }: Props) {
         })}
       </Map>
       <div className="pointer-events-none absolute bottom-3 left-3 z-20">
-        <div className="pointer-events-auto max-w-[12rem] rounded-xl border border-border/50 bg-card/[0.97] px-3 py-2.5 text-[10px] leading-tight shadow-premium ring-1 ring-black/[0.04] backdrop-blur-md dark:border-border/40 dark:bg-card/95 dark:ring-white/[0.06]">
+        <div className="pointer-events-auto max-w-48 rounded-xl border border-border/50 bg-card/97 px-3 py-2.5 text-[10px] leading-tight shadow-premium ring-1 ring-black/4 backdrop-blur-md dark:border-border/40 dark:bg-card/95 dark:ring-white/6">
           <div className="mb-2 flex items-center justify-between gap-1">
             <p className="font-heading text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
               Heat
@@ -244,32 +244,34 @@ export function OpportunityMap({ markets, selectedId, onSelect }: Props) {
               align="end"
               className="size-6 text-muted-foreground"
             >
-              Markers use an <span className="font-medium text-background">info-style heat</span>{" "}
-              (cooler blues → stronger cyan/teal), not good/bad traffic lights. Each dot is one labor
-              market; color is relative opportunity for your current search—not job-post count.
+              Markers use an <span className="font-medium text-background">signal ramp</span>{" "}
+              (slate → violet → gold), not good/bad traffic lights. Each dot is one labor
+              market; shape is also encoded (ring / dot / diamond) so interpretation does not rely
+              on color only.
             </InfoTip>
           </div>
+          <div className="mb-2 h-1.5 rounded-full bg-linear-to-r from-(--opportunity-heat-low) via-(--opportunity-heat-mid) to-(--opportunity-heat-high) opacity-85" />
           <ul className="space-y-1 text-muted-foreground" aria-label="Opportunity heat legend">
             <li className="flex items-center gap-1.5">
               <span
                 className="heat-marker--high size-2.5 shrink-0 rounded-full ring-1 ring-black/12"
                 aria-hidden
               />
-              Stronger
+              Prime momentum (diamond)
             </li>
             <li className="flex items-center gap-1.5">
               <span
                 className="heat-marker--mid size-2.5 shrink-0 rounded-full ring-1 ring-black/12"
                 aria-hidden
               />
-              Moderate
+              Building demand (dot)
             </li>
             <li className="flex items-center gap-1.5">
               <span
                 className="heat-marker--low size-2.5 shrink-0 rounded-full ring-1 ring-black/12"
                 aria-hidden
               />
-              Cooler
+              Early signal (ring)
             </li>
           </ul>
         </div>

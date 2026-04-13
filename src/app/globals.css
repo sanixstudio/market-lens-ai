@@ -57,12 +57,13 @@
   */
   --z-tooltip: 380;
   /*
-    Opportunity “heat” (info scale): cool slate → blue → cyan/teal.
-    Same ramp in light & dark so map markers stay legible on Mapbox light basemap.
+    Opportunity “heat” (info scale): slate → violet → gold.
+    Palette is chosen to remain distinguishable for common color-vision deficiencies.
+    Shapes/patterns are also used on markers to avoid color-only encoding.
   */
-  --opportunity-heat-low: oklch(0.76 0.055 252);
-  --opportunity-heat-mid: oklch(0.62 0.13 242);
-  --opportunity-heat-high: oklch(0.51 0.165 218);
+  --opportunity-heat-low: oklch(0.66 0.04 270);
+  --opportunity-heat-mid: oklch(0.58 0.12 312);
+  --opportunity-heat-high: oklch(0.8 0.14 90);
   /* Slightly cooler canvas — reads as “analyst workstation” without going cold */
   --background: oklch(0.972 0.005 268);
   --foreground: oklch(0.165 0.03 268);
@@ -241,42 +242,85 @@
     );
   }
 
-  /** Map markers: solid info-heat fill */
-  .heat-marker--low {
-    background-color: var(--opportunity-heat-low);
-  }
-  .heat-marker--mid {
-    background-color: var(--opportunity-heat-mid);
-  }
+  /** Map markers: color + shape coding (not color-only) for accessibility */
+  .heat-marker--low,
+  .heat-marker--mid,
   .heat-marker--high {
-    background-color: var(--opportunity-heat-high);
+    position: relative;
+  }
+
+  .heat-marker--low {
+    background: radial-gradient(circle at 30% 28%, oklch(0.92 0.015 285 / 85%), var(--opportunity-heat-low));
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--opportunity-heat-low) 45%, black),
+      0 0 0 3px color-mix(in oklab, var(--opportunity-heat-low) 35%, transparent);
+  }
+  .heat-marker--low::after {
+    content: "";
+    position: absolute;
+    inset: 26%;
+    border-radius: 9999px;
+    border: 1.5px solid color-mix(in oklab, var(--opportunity-heat-low) 30%, black);
+    background: transparent;
+  }
+
+  .heat-marker--mid {
+    background: radial-gradient(circle at 30% 28%, oklch(0.9 0.03 320 / 88%), var(--opportunity-heat-mid));
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--opportunity-heat-mid) 52%, black),
+      0 0 0 3px color-mix(in oklab, var(--opportunity-heat-mid) 38%, transparent);
+  }
+  .heat-marker--mid::after {
+    content: "";
+    position: absolute;
+    inset: 34%;
+    border-radius: 9999px;
+    background: color-mix(in oklab, var(--opportunity-heat-mid) 35%, black);
+  }
+
+  .heat-marker--high {
+    background: radial-gradient(circle at 30% 28%, oklch(0.96 0.04 92 / 92%), var(--opportunity-heat-high));
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--opportunity-heat-high) 48%, black),
+      0 0 0 3px color-mix(in oklab, var(--opportunity-heat-high) 42%, transparent);
+  }
+  .heat-marker--high::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 42%;
+    height: 42%;
+    transform: translate(-50%, -50%) rotate(45deg);
+    border-radius: 1px;
+    background: color-mix(in oklab, var(--opportunity-heat-high) 35%, black);
   }
 
   /**
    * Ranked list score pills: tinted chip + readable text (theme-aware).
    */
   .heat-pill--low {
-    background-color: color-mix(in oklab, var(--opportunity-heat-low) 28%, var(--card));
-    color: oklch(0.32 0.06 265);
+    background-color: color-mix(in oklab, var(--opportunity-heat-low) 30%, var(--card));
+    color: oklch(0.3 0.04 288);
   }
   .heat-pill--mid {
-    background-color: color-mix(in oklab, var(--opportunity-heat-mid) 26%, var(--card));
-    color: oklch(0.3 0.12 248);
+    background-color: color-mix(in oklab, var(--opportunity-heat-mid) 28%, var(--card));
+    color: oklch(0.32 0.12 320);
   }
   .heat-pill--high {
-    background-color: color-mix(in oklab, var(--opportunity-heat-high) 24%, var(--card));
-    color: oklch(0.28 0.14 230);
+    background-color: color-mix(in oklab, var(--opportunity-heat-high) 26%, var(--card));
+    color: oklch(0.38 0.09 88);
   }
   .dark .heat-pill--low {
-    background-color: color-mix(in oklab, var(--opportunity-heat-low) 42%, var(--card));
-    color: oklch(0.88 0.04 260);
+    background-color: color-mix(in oklab, var(--opportunity-heat-low) 45%, var(--card));
+    color: oklch(0.9 0.02 286);
   }
   .dark .heat-pill--mid {
-    background-color: color-mix(in oklab, var(--opportunity-heat-mid) 38%, var(--card));
-    color: oklch(0.86 0.08 235);
+    background-color: color-mix(in oklab, var(--opportunity-heat-mid) 42%, var(--card));
+    color: oklch(0.88 0.09 322);
   }
   .dark .heat-pill--high {
-    background-color: color-mix(in oklab, var(--opportunity-heat-high) 36%, var(--card));
-    color: oklch(0.9 0.09 215);
+    background-color: color-mix(in oklab, var(--opportunity-heat-high) 40%, var(--card));
+    color: oklch(0.92 0.08 92);
   }
 }

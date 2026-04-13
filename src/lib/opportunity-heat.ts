@@ -1,6 +1,6 @@
 /**
  * Opportunity score → heat band for map markers and list styling.
- * Uses an informational blue→cyan ramp (not red/amber “alert” semantics).
+ * Uses an informational smoke→plum→amber ramp (not red/amber “alert” semantics).
  */
 export const OPPORTUNITY_HEAT_HIGH_MIN = 0.72;
 export const OPPORTUNITY_HEAT_MID_MIN = 0.55;
