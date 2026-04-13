@@ -256,6 +256,7 @@ export function MarketExplorer() {
         regionName: m.regionName,
         centroid: m.centroid,
         opportunityScore: m.opportunityScore,
+        confidenceScore: m.confidenceScore,
       })),
     [markets]
   );
@@ -266,7 +267,7 @@ export function MarketExplorer() {
         Chrome must stack above `main`: the "More" filter popover extends over the map.
         Without z-index, later DOM siblings (main) paint on top and hide dropdowns.
       */}
-      <div className="relative z-[100] isolate shrink-0">
+      <div className="relative z-100 isolate shrink-0">
         <AppHeader
           primaryActions={
             <>

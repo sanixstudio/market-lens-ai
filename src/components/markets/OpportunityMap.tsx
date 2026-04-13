@@ -63,11 +63,18 @@ const EMPTY_OVERVIEW_EASE = {
   essential: true,
 } as const;
 
+function confidenceLabel(score: number): string {
+  if (score >= 75) return "High confidence";
+  if (score >= 55) return "Moderate confidence";
+  return "Limited confidence";
+}
+
 export type MapMarket = {
   regionId: string;
   regionName: string;
   centroid: { lat: number; lng: number };
   opportunityScore: number;
+  confidenceScore: number;
 };
 
 type Props = {
@@ -148,6 +155,10 @@ export function OpportunityMap({ markets, selectedId, onSelect }: Props) {
   const marketsKey = useMemo(
     () => markets.map((m) => m.regionId).sort().join("|"),
     [markets]
+  );
+  const selectedMarket = useMemo(
+    () => markets.find((m) => m.regionId === selectedId) ?? null,
+    [markets, selectedId]
   );
 
   const handleLoad = useCallback((e: MapEvent) => {
@@ -232,6 +243,23 @@ export function OpportunityMap({ markets, selectedId, onSelect }: Props) {
           );
         })}
       </Map>
+      <div className="pointer-events-none absolute left-3 top-3 z-20">
+        <div className="pointer-events-auto flex flex-wrap items-center gap-1.5 rounded-xl border border-border/50 bg-card/96 px-2.5 py-2 text-[10px] shadow-premium ring-1 ring-black/4 backdrop-blur-md dark:border-border/40 dark:bg-card/95 dark:ring-white/6">
+          <span className="rounded-full bg-muted px-2 py-0.5 font-medium text-muted-foreground">
+            {markets.length} markets
+          </span>
+          {selectedMarket ? (
+            <>
+              <span className="rounded-full bg-primary/12 px-2 py-0.5 font-medium text-primary">
+                {selectedMarket.regionName}
+              </span>
+              <span className="rounded-full bg-muted px-2 py-0.5 font-medium text-muted-foreground">
+                {confidenceLabel(selectedMarket.confidenceScore)}
+              </span>
+            </>
+          ) : null}
+        </div>
+      </div>
       <div className="pointer-events-none absolute bottom-3 left-3 z-20">
         <div className="pointer-events-auto max-w-48 rounded-xl border border-border/50 bg-card/97 px-3 py-2.5 text-[10px] leading-tight shadow-premium ring-1 ring-black/4 backdrop-blur-md dark:border-border/40 dark:bg-card/95 dark:ring-white/6">
           <div className="mb-2 flex items-center justify-between gap-1">

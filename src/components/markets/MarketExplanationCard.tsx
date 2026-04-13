@@ -54,51 +54,8 @@ export function MarketExplanationCard({
         </div>
       </CardHeader>
       <CardContent className={cn("text-sm", embedded ? "space-y-3 pt-3" : "space-y-4 pt-4")}>
-        <p className="leading-relaxed text-foreground">{explanation.summary}</p>
-        <div>
-          <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Strengths
-          </h4>
-          <ul className="list-inside list-disc space-y-0.5 text-xs text-muted-foreground">
-            {explanation.strengths.map((s) => (
-              <li key={s}>{s}</li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Tradeoffs
-          </h4>
-          <ul className="list-inside list-disc space-y-0.5 text-xs text-muted-foreground">
-            {explanation.tradeoffs.map((s) => (
-              <li key={s}>{s}</li>
-            ))}
-          </ul>
-        </div>
-        <Separator />
-        <div>
-          <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Best for
-          </h4>
-          <ul className="list-inside list-disc space-y-0.5 text-xs text-muted-foreground">
-            {explanation.bestFor.map((s) => (
-              <li key={s}>{s}</li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Watchouts
-          </h4>
-          <ul className="list-inside list-disc space-y-0.5 text-xs text-muted-foreground">
-            {explanation.watchouts.map((s) => (
-              <li key={s}>{s}</li>
-            ))}
-          </ul>
-        </div>
-        <p className="text-xs text-muted-foreground">{explanation.confidenceNote}</p>
         {onFeedback ? (
-          <div className="flex flex-wrap gap-2 border-t border-border/60 pt-3">
+          <div className="flex flex-wrap gap-2 border-b border-border/60 pb-3">
             <Button
               type="button"
               size="sm"
@@ -119,6 +76,44 @@ export function MarketExplanationCard({
             </Button>
           </div>
         ) : null}
+        <div className="rounded-lg border border-border/50 bg-muted/20 px-3 py-2.5">
+          <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Bottom line
+          </h4>
+          <p className="mt-1 leading-relaxed text-foreground">{explanation.summary}</p>
+        </div>
+        <div>
+          <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Why
+          </h4>
+          <ul className="list-inside list-disc space-y-0.5 text-xs text-muted-foreground">
+            {explanation.strengths.map((s) => (
+              <li key={s}>{s}</li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Tradeoffs
+          </h4>
+          <ul className="list-inside list-disc space-y-0.5 text-xs text-muted-foreground">
+            {[...explanation.tradeoffs, ...explanation.watchouts].map((s, idx) => (
+              <li key={`${s}-${idx}`}>{s}</li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Best for
+          </h4>
+          <ul className="list-inside list-disc space-y-0.5 text-xs text-muted-foreground">
+            {explanation.bestFor.map((s) => (
+              <li key={s}>{s}</li>
+            ))}
+          </ul>
+        </div>
+        <Separator />
+        <p className="text-xs text-muted-foreground">{explanation.confidenceNote}</p>
       </CardContent>
     </Card>
   );

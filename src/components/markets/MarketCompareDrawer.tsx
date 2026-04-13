@@ -46,6 +46,21 @@ async function postCompareStarted(queryId: string | undefined) {
   });
 }
 
+function buildOutcomeRecommendation(comparison: CompareMarketsResponse["comparison"]): string | null {
+  if (comparison.length < 2) return null;
+  const [a, b] = comparison;
+
+  const roleDiff = a.activeJobs - b.activeJobs;
+  const payDiff = (a.medianPay ?? 0) - (b.medianPay ?? 0);
+  const confidenceDiff = a.confidenceScore - b.confidenceScore;
+
+  const roleLeader = roleDiff >= 0 ? a.regionName : b.regionName;
+  const payLeader = payDiff >= 0 ? a.regionName : b.regionName;
+  const confidenceLeader = confidenceDiff >= 0 ? a.regionName : b.regionName;
+
+  return `Pick ${roleLeader} for more immediate hiring volume, pick ${payLeader} for stronger compensation upside, and lean ${confidenceLeader} if you value signal reliability most.`;
+}
+
 /**
  * Sheet: pick a second region and view side-by-side metrics + summary.
  */
@@ -75,21 +90,25 @@ export function MarketCompareDrawer({
   });
 
   const runCompare = () => {
-    if (!primaryRegionId || !otherId) return;
+    const fallbackId = markets.find((m) => m.regionId !== primaryRegionId)?.regionId ?? null;
+    const candidateId = otherId ?? fallbackId;
+    if (!primaryRegionId || !candidateId) return;
     void postCompareStarted(queryId ?? undefined);
-    compareMutation.mutate([primaryRegionId, otherId]);
+    compareMutation.mutate([primaryRegionId, candidateId]);
   };
 
   const result = compareMutation.data;
   const primaryName =
     markets.find((m) => m.regionId === primaryRegionId)?.regionName ?? null;
   const otherMarketOptions = markets.filter((m) => m.regionId !== primaryRegionId);
+  const effectiveOtherId = otherId ?? otherMarketOptions[0]?.regionId ?? null;
+  const recommendation = result ? buildOutcomeRecommendation(result.comparison) : null;
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="flex w-full flex-col gap-0 overflow-y-auto border-l border-border/40 bg-popover p-0 shadow-xl sm:max-w-md sm:rounded-l-lg dark:border-border/40 dark:bg-card">
         <div className="accent-line w-full shrink-0" aria-hidden />
-        <div className="border-b border-border/50 bg-gradient-to-r from-muted/25 to-transparent px-6 py-5 dark:from-muted/15">
+        <div className="border-b border-border/50 bg-linear-to-r from-muted/25 to-transparent px-6 py-5 dark:from-muted/15">
           <SheetHeader className="space-y-1.5 p-0 text-left">
             <SheetTitle className="font-heading text-lg font-semibold tracking-tight">
               Compare markets
@@ -127,7 +146,7 @@ export function MarketCompareDrawer({
               </p>
             ) : (
               <Select
-                value={otherId ?? ""}
+                value={effectiveOtherId ?? ""}
                 onValueChange={(v) => {
                   setOtherId(v ? v : null);
                 }}
@@ -152,7 +171,7 @@ export function MarketCompareDrawer({
           <Button
             type="button"
             className="w-full rounded-lg sm:w-auto"
-            disabled={!primaryRegionId || !otherId || compareMutation.isPending}
+            disabled={!primaryRegionId || !effectiveOtherId || compareMutation.isPending}
             onClick={runCompare}
           >
             {compareMutation.isPending ? "Comparing…" : "Run comparison"}
@@ -166,6 +185,12 @@ export function MarketCompareDrawer({
 
           {result ? (
             <div className="space-y-4 border-t border-border/60 pt-4">
+              {recommendation ? (
+                <div className="rounded-xl border border-primary/25 bg-primary/8 px-3 py-2.5 text-xs dark:border-primary/30 dark:bg-primary/12">
+                  <p className="font-semibold tracking-wide text-primary">Outcome</p>
+                  <p className="mt-1 text-foreground/90">{recommendation}</p>
+                </div>
+              ) : null}
               <p className="text-sm leading-relaxed text-foreground">{result.summary}</p>
               <CompareMarketsCharts comparison={result.comparison} />
               <div className="grid gap-3 sm:grid-cols-2">
